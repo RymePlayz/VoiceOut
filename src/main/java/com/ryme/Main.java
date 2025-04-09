@@ -366,54 +366,15 @@ public class Main {
         leftPanel.add(postPetitionButton);
         leftPanel.add(Box.createVerticalGlue());
 
-        // --------------- Posts Container (Center) ---------------
+        // Posts Container: Holds all post panels
         JPanel postsContainer = new JPanel();
         postsContainer.setLayout(new BoxLayout(postsContainer, BoxLayout.Y_AXIS));
         postsContainer.setBackground(new Color(245, 245, 245));
         postsContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Remove any existing components in postsContainer.
-        postsContainer.removeAll();
-
-        // Query the database for posts.
-        try (Connection conn = getConnection();
-                PreparedStatement stmt = conn.prepareStatement(
-                        "SELECT id, user_id, content, donation_goal, donation_received, created_at, author FROM posts ORDER BY created_at DESC")) {
-
-            ResultSet rs = stmt.executeQuery();
-            boolean hasPosts = false;
-            while (rs.next()) {
-                hasPosts = true;
-                int postId = rs.getInt("id");
-                String content = rs.getString("content");
-                double donationGoal = rs.getDouble("donation_goal");
-                double donationReceived = rs.getDouble("donation_received");
-                java.sql.Timestamp createdAtObj = rs.getTimestamp("created_at");
-                String createdAt = createdAtObj.toString();
-                String postedBy = rs.getString("author"); // Author's ePhilID
-
-                // Since your schema doesn’t include votes, we default them to 0.
-                int upvotes = 0;
-                int downvotes = 0;
-                int commentCount = getCommentCount(postId);
-
-                postsContainer.add(createPostPanel(postId, postedBy, content, upvotes, downvotes, commentCount,
-                        donationGoal, donationReceived, createdAt));
-                postsContainer.add(Box.createVerticalStrut(10));
-            }
-            if (!hasPosts) {
-                JLabel noPostsLabel = new JLabel("No posts yet. Please post a petition.");
-                noPostsLabel.setForeground(Color.GRAY);
-                noPostsLabel.setFont(new Font("SansSerif", Font.ITALIC, 16));
-                noPostsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                postsContainer.add(noPostsLabel);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(mainFrame,
-                    "Error fetching posts: " + ex.getMessage(),
-                    "Database Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // Timer to refresh postsContainer automatically every 1 minute (60,000ms)
+        Timer refreshTimer = new Timer(5000, e -> refreshPostsContainer(postsContainer));
+        refreshTimer.start();
 
         JScrollPane scrollPane = new JScrollPane(postsContainer);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -443,6 +404,51 @@ public class Main {
         mainPanel.add(footerPanel, BorderLayout.SOUTH);
         mainFrame.add(mainPanel);
         mainFrame.setVisible(true);
+    }
+
+    // help for post // Remove any existing components and query database for posts
+    // (refresh logic)
+    private void refreshPostsContainer(JPanel postsContainer) {
+        postsContainer.removeAll(); // Clear all components
+
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(
+                        "SELECT id, user_id, content, donation_goal, donation_received, created_at, author, upvotes, downvotes FROM posts ORDER BY created_at DESC")) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int postId = rs.getInt("id");
+                String content = rs.getString("content");
+                double donationGoal = rs.getDouble("donation_goal");
+                double donationReceived = rs.getDouble("donation_received");
+                java.sql.Timestamp createdAtObj = rs.getTimestamp("created_at");
+                String createdAt = createdAtObj.toString();
+                String postedBy = rs.getString("author");
+                int upvotes = rs.getInt("upvotes");
+                int downvotes = rs.getInt("downvotes");
+                int commentCount = getCommentCount(postId);
+
+                postsContainer.add(createPostPanel(postId, postedBy, content, upvotes, downvotes, commentCount,
+                        donationGoal, donationReceived, createdAt));
+                postsContainer.add(Box.createVerticalStrut(10));
+            }
+
+            if (postsContainer.getComponentCount() == 0) {
+                JLabel noPostsLabel = new JLabel("No posts yet. Please post a petition.");
+                noPostsLabel.setForeground(Color.GRAY);
+                noPostsLabel.setFont(new Font("SansSerif", Font.ITALIC, 16));
+                noPostsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                postsContainer.add(noPostsLabel);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error fetching posts: " + ex.getMessage(), "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+
+        // Refresh UI
+        postsContainer.revalidate();
+        postsContainer.repaint();
     }
 
     // Helper method to get comment count for a given post
@@ -851,7 +857,7 @@ public class Main {
         actionPanel.setBackground(Color.WHITE);
 
         // Upvote button
-        final JButton upvoteButton = new JButton("👍 " + upvotes);
+        final JButton upvoteButton = new JButton("↑ " + upvotes);
         upvoteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try (Connection conn = getConnection()) {
@@ -892,7 +898,7 @@ public class Main {
                             if (rs2.next()) {
                                 newUpvotes = rs2.getInt("upvotes");
                             }
-                            upvoteButton.setText("👍 " + newUpvotes);
+                            upvoteButton.setText("↑ " + newUpvotes);
                         }
                     }
                     JOptionPane.showMessageDialog(mainFrame, "Thank you for your vote!");
@@ -905,7 +911,7 @@ public class Main {
         });
 
         // Downvote button
-        final JButton downvoteButton = new JButton("👎 " + downvotes);
+        final JButton downvoteButton = new JButton("↓ " + downvotes);
         downvoteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try (Connection conn = getConnection()) {
@@ -946,7 +952,7 @@ public class Main {
                             if (rs2.next()) {
                                 newDownvotes = rs2.getInt("downvotes");
                             }
-                            downvoteButton.setText("👎 " + newDownvotes);
+                            downvoteButton.setText("↓ " + newDownvotes);
                         }
                     }
                     JOptionPane.showMessageDialog(mainFrame, "Thank you for your vote!");
@@ -959,7 +965,7 @@ public class Main {
         });
 
         // Comment button – opens the comments UI for this post.
-        JButton commentButton = new JButton("💬 " + commentCount);
+        JButton commentButton = new JButton("ℭ" + commentCount);
         commentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 showCommentsUI(postId);
@@ -1176,7 +1182,7 @@ public class Main {
         });
     }
 
-    // components for ui's
+    // components for ui'sa
     private Image loadBackgroundImage() {
         URL imageUrl = getClass().getResource("background.png");
         if (imageUrl == null) {

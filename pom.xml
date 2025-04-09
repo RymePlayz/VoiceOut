@@ -15,6 +15,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>9.2.0</version>
+      <scope>system</scope>
+      <systemPath>$/home/ryme/GitHub/VoiceOut/src/main/java/com/ryme/mysql-connector-j-9.2.0.jar</systemPath>
+    </dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
     <version>9.2.0</version>
