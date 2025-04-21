@@ -1,14 +1,14 @@
 package ryme.Oop;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseValidator implements IValidation {
-    // Protected so that subclasses can access and modify the error list.
+    // Holds error messages; protected so subclass can access.
     protected final List<String> errorMessages = new ArrayList<>();
 
+    // Helper method to add errors from within the class hierarchy.
     protected void addError(String message) {
         errorMessages.add(message);
     }
@@ -18,11 +18,10 @@ public abstract class BaseValidator implements IValidation {
         errorMessages.add(message);
     }
 
-    // Default displayErrors method (can be overridden).
+    // Default error display: shows a popup.
     @Override
     public boolean displayErrors() {
         if (!errorMessages.isEmpty()) {
-            // Default: Show an error dialog.
             JOptionPane.showMessageDialog(
                 null,
                 String.join("\n", errorMessages),

@@ -1,5 +1,6 @@
 package ryme.Ui;
 
+import ryme.Oop.Encapsulation;
 import ryme.Oop.*;
 import ryme.Helper.*;
 
@@ -7,6 +8,20 @@ public class LoginForm extends javax.swing.JFrame {
 
     public LoginForm() {
         initComponents();
+        
+        goToRegisterLabelBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                RegisterForm registerForm = new RegisterForm();
+                registerForm.setVisible(true);
+                LoginForm.this.dispose(); // Close LoginForm
+            }
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                goToRegisterLabelBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -22,8 +37,7 @@ public class LoginForm extends javax.swing.JFrame {
         passwordFld = new javax.swing.JPasswordField();
         loginBtn = new javax.swing.JButton();
         goToRegisterLabelBtn = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -87,11 +101,8 @@ public class LoginForm extends javax.swing.JFrame {
 
         jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 0, 360, 400));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/logo.png"))); // NOI18N
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, -1));
-
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/graycircle.png"))); // NOI18N
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, -1, -1));
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/LogoB.png"))); // NOI18N
+        jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 70, -1, -1));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
@@ -104,14 +115,41 @@ public class LoginForm extends javax.swing.JFrame {
     }//GEN-LAST:event_passwordFldActionPerformed
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
+        Encapsulation userData = new Encapsulation(userNameFld.getText().trim(), passwordFld.getText().trim());
+        userData.setUsername(userNameFld.getText().trim());//update the value of username and password cuz it  stuck up
+        userData.setPassword(passwordFld.getText().trim());//if not updated every click(data stuc)
+
         userNameFld.setName("EPhillID");
         passwordFld.setName("Password");
-        //chanege to null for both ways, true for user flase for terminal
-        IValidation validator = new ValidationWithOption(true);
 
-        if (!validator.validateFields(userNameFld, passwordFld)) {
+        //true = popup, false = terminal, null = both)
+        IValidation validator = new ValidationWithOption(null);
+
+        if (userData.getUsername().isEmpty()) {
+            validator.addCustomError("• EPhillID must not be blank!");
+        } else {
+            if (!userData.getUsername().matches("\\d+")) {
+                validator.addCustomError("• EPhillID must be a valid number (only digits allowed).");
+            }
+        }
+
+        if (userData.getPassword().isEmpty()) {
+            validator.addCustomError("• Password must not be blank!");
+        } else {
+            if (userData.getPassword().length() <= 6) {
+                validator.addCustomError("• Password must have more than 6 characters.");
+            }
+        }
+
+        // Display all accumulated errors.
+        if (!validator.displayErrors()) {
             return;
         }
+        MainForm mainForm = new MainForm();
+mainForm.setVisible(true);
+dispose(); // Close current LoginForm
+
+
     }//GEN-LAST:event_loginBtnActionPerformed
 
     public static void main(String args[]) {
@@ -145,12 +183,11 @@ public class LoginForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel goToRegisterLabelBtn;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private static javax.swing.JLabel goToRegisterLabelBtn;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton loginBtn;
