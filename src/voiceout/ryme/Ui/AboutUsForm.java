@@ -60,6 +60,8 @@ public class AboutUsForm extends javax.swing.JFrame {
                     CurrentSession currentSession = CurrentSession.getInstance();
                     currentSession.clearSession();
                     dispose();
+                    LoginForm loginForm = new LoginForm();
+                    loginForm.setVisible(true);
                 }
             }
         });
@@ -237,7 +239,7 @@ public class AboutUsForm extends javax.swing.JFrame {
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(328, 458, 1002, 365));
 
-        jPanel3.setBackground(new java.awt.Color(102, 0, 204));
+        jPanel3.setBackground(new java.awt.Color(102, 102, 102));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -284,6 +286,7 @@ public class AboutUsForm extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (jTextArea1.getText().isEmpty()) {
         } else {
+            jTextArea1.setText("");
             JOptionPane.showMessageDialog(null, "Thank you for your review!", "Confirmation", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_jButton1ActionPerformed

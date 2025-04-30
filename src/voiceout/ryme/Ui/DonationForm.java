@@ -57,7 +57,8 @@ public class DonationForm extends javax.swing.JFrame {
                 activityLogForm.setVisible(true);
                 dispose();
             }
-        });logout.addMouseListener(new java.awt.event.MouseAdapter() {
+        });
+        logout.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
@@ -66,6 +67,8 @@ public class DonationForm extends javax.swing.JFrame {
                     CurrentSession currentSession = CurrentSession.getInstance();
                     currentSession.clearSession();
                     dispose();
+                    LoginForm loginForm = new LoginForm();
+                    loginForm.setVisible(true);
                 }
             }
         });
@@ -91,7 +94,7 @@ public class DonationForm extends javax.swing.JFrame {
             String query = "UPDATE site_donation SET donation_received = donation_received + ? ORDER BY donation_site_id DESC LIMIT 1";
             PreparedStatement pst = conn.prepareStatement(query);
 
-            long donationAmount = Long.parseLong(donation.getText()); // Get amount from JTextField
+            long donationAmount = Long.parseLong(donation.getText());
             pst.setLong(1, donationAmount);
 
             int rowsUpdated = pst.executeUpdate();
@@ -100,7 +103,7 @@ public class DonationForm extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to update donation.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException | NumberFormatException e) {  
+        } catch (SQLException | NumberFormatException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Invalid donation amount.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -223,7 +226,7 @@ public class DonationForm extends javax.swing.JFrame {
 
         support.setFont(new java.awt.Font("Inter", 1, 48)); // NOI18N
         support.setForeground(new java.awt.Color(255, 255, 255));
-        support.setText("Support Out Work");
+        support.setText("Support My Work");
         jPanel2.add(support, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 40, 460, -1));
 
         donation.setBackground(new java.awt.Color(102, 102, 102));
@@ -270,8 +273,9 @@ public class DonationForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void doanteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doanteBtnActionPerformed
-        updateDonationReceived(donation_recieved);
         updateDonation();
+        updateDonationReceived(donation_recieved);
+
         donation.setText("");
     }//GEN-LAST:event_doanteBtnActionPerformed
 

@@ -14,9 +14,8 @@ import javax.swing.table.DefaultTableModel;
 public class UserInfoForm extends javax.swing.JFrame {
 
     public UserInfoForm() {
-        initComponents();
-        showCurrentUserData();
-        enableUserEditListener();
+        initComponents(); // ✅ Initialize UI components
+        showCurrentUserData(); // ✅ Load user data from current session
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -69,6 +68,8 @@ public class UserInfoForm extends javax.swing.JFrame {
                     CurrentSession currentSession = CurrentSession.getInstance();
                     currentSession.clearSession();
                     dispose();
+                    LoginForm loginForm = new LoginForm();
+                    loginForm.setVisible(true);
                 }
             }
         });
@@ -78,14 +79,14 @@ public class UserInfoForm extends javax.swing.JFrame {
         CurrentSession session = CurrentSession.getInstance();
         DefaultTableModel model = (DefaultTableModel) user_edit_table.getModel();
 
-        // Clear existing rows
+        // ✅ Clear existing rows to prevent duplication
         model.setRowCount(0);
 
-        // Add the current session data as a row
+        // ✅ Add current session data as a row
         Object[] row = {
             session.getUserId(),
             session.getUsername(),
-            session.getPassword(), // Consider hashing passwords for security
+            session.getPassword(), // ⚠️ Consider hashing passwords for security
             session.getName(),
             session.getAge(),
             session.getEmail(),
@@ -94,31 +95,16 @@ public class UserInfoForm extends javax.swing.JFrame {
             session.getGender()
         };
 
-        model.addRow(row); // Add row to the table
+        model.addRow(row); // ✅ Add row to the table
     }
 
-    private void enableUserEditListener() {
+    private void updateUserData() {
         DefaultTableModel model = (DefaultTableModel) user_edit_table.getModel();
-        model.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                int row = e.getFirstRow();
-                int column = e.getColumn();
+        int rowCount = model.getRowCount();
 
-                if (column != 0 && column != 1) { // Ignore changes in userId and EPhillID
-                    updateUserData(row);
-                }
-            }
-        });
-    }
-
-    private void updateUserData(int row) {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/voiceout", "root", "")) {
-            String query = "UPDATE users SET password=?, name=?, age=?, email=?, contact_num=?, address=?, gender=? WHERE user_id=?";
-            PreparedStatement pst = conn.prepareStatement(query);
-
-            DefaultTableModel model = (DefaultTableModel) user_edit_table.getModel();
-            int userId = (int) model.getValueAt(row, 0); // Get userId
+        for (int row = 0; row < rowCount; row++) {
+            int userId = (int) model.getValueAt(row, 0);
+            String username = (String) model.getValueAt(row, 1);
             String password = (String) model.getValueAt(row, 2);
             String name = (String) model.getValueAt(row, 3);
             int age = Integer.parseInt(model.getValueAt(row, 4).toString());
@@ -127,22 +113,39 @@ public class UserInfoForm extends javax.swing.JFrame {
             String address = (String) model.getValueAt(row, 7);
             String gender = (String) model.getValueAt(row, 8);
 
-            // Update PreparedStatement values
-            pst.setString(1, password);
-            pst.setString(2, name);
-            pst.setInt(3, age);
-            pst.setString(4, email);
-            pst.setString(5, contactNum);
-            pst.setString(6, address);
-            pst.setString(7, gender);
-            pst.setInt(8, userId);
-
-            int updated = pst.executeUpdate();
-            if (updated > 0) {
-                updateCurrentSession(userId, password, name, age, email, contactNum, address, gender);
+            // ✅ Check for blank fields
+            if (password.isEmpty() || name.isEmpty() || email.isEmpty() || contactNum.isEmpty() || address.isEmpty() || gender.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Error: All fields must be filled.", "Update Error", JOptionPane.ERROR_MESSAGE);
+                return; // Exit the method
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            // ✅ Check password length (must be greater than 6)
+            if (password.length() < 6) {
+                JOptionPane.showMessageDialog(null, "Error: Password must be at least 6 characters long.", "Update Error", JOptionPane.ERROR_MESSAGE);
+                return; // Exit the method
+            }
+            JOptionPane.showMessageDialog(null, "Updated Succesfully!", "User Data Updated", JOptionPane.INFORMATION_MESSAGE);
+
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/voiceout", "root", "")) {
+                String query = "UPDATE users SET password=?, name=?, age=?, email=?, contact_num=?, address=?, gender=? WHERE user_id=?";
+                PreparedStatement pst = conn.prepareStatement(query);
+
+                pst.setString(1, password);
+                pst.setString(2, name);
+                pst.setInt(3, age);
+                pst.setString(4, email);
+                pst.setString(5, contactNum);
+                pst.setString(6, address);
+                pst.setString(7, gender);
+                pst.setInt(8, userId);
+
+                int updated = pst.executeUpdate();
+                if (updated > 0) {
+                    updateCurrentSession(userId, password, name, age, email, contactNum, address, gender);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -179,6 +182,7 @@ public class UserInfoForm extends javax.swing.JFrame {
         user_edit_table = new javax.swing.JTable();
         jLabel11 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        updateBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -291,7 +295,7 @@ public class UserInfoForm extends javax.swing.JFrame {
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, true, true, true, true, true, true, true
+                false, false, true, true, false, true, true, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -320,6 +324,13 @@ public class UserInfoForm extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Double row to edit");
 
+        updateBtn.setText("Update");
+        updateBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updateBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -333,9 +344,11 @@ public class UserInfoForm extends javax.swing.JFrame {
                     .addComponent(jLabel11)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(50, 50, 50)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1010, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(updateBtn)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel9)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1010, javax.swing.GroupLayout.PREFERRED_SIZE))))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -349,7 +362,9 @@ public class UserInfoForm extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addGap(8, 8, 8)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(155, 155, 155)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(updateBtn)
+                .addGap(126, 126, 126)
                 .addComponent(jLabel11))
         );
 
@@ -371,6 +386,10 @@ public class UserInfoForm extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        updateUserData();
+    }//GEN-LAST:event_updateBtnActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -419,6 +438,7 @@ public class UserInfoForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel logout;
+    private javax.swing.JButton updateBtn;
     private javax.swing.JTable user_edit_table;
     // End of variables declaration//GEN-END:variables
 }

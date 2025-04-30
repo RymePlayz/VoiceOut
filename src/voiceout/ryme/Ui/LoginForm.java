@@ -10,6 +10,7 @@ import javax.swing.KeyStroke;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import javax.swing.JTextField;
 
 public class LoginForm extends javax.swing.JFrame {
 
@@ -24,8 +25,16 @@ public class LoginForm extends javax.swing.JFrame {
                 dispose();
             }
         });
-        this.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enterPressed");
-        this.getRootPane().getActionMap().put("enterPressed", new AbstractAction() {
+        usernameFld.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "moveToPassFld");
+        usernameFld.getActionMap().put("moveToPassFld", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                passFld.requestFocusInWindow(); // ✅ Moves focus to password field
+            }
+        });
+
+        passFld.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enterPressed");
+        passFld.getActionMap().put("enterPressed", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 loginBtnActionPerformed(new ActionEvent(loginBtn, ActionEvent.ACTION_PERFORMED, "Enter Key Pressed"));
@@ -116,14 +125,15 @@ public class LoginForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        usernameFld.setName("EPhillID");
-        passFld.setName("Password");
-
         String username = usernameFld.getText().trim();
         String pass = passFld.getText().trim();
 
-        IValidation validator = new ValidationWithOption(null);
-
+        ValidationManager validator = new ValidationManager() {
+            @Override
+            public boolean validateFields(JTextField... fields) {
+                return super.validateFields(fields);
+            }
+        };
         if (username.isEmpty()) {
             validator.addCustomError("• EphillID must not be blank!");
         }

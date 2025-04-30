@@ -46,7 +46,7 @@ public class CurrentSession {
 
     public void setPassword(String password) {
         this.password = password;
-    } // Consider storing hashed passwords
+    } 
 
     public String getContactNumber() {
         return contactNumber;

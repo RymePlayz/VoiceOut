@@ -76,6 +76,8 @@ public class SiteTrafficForm extends javax.swing.JFrame {
                     CurrentSession currentSession = CurrentSession.getInstance();
                     currentSession.clearSession();
                     dispose();
+                    LoginForm loginForm = new LoginForm();
+                    loginForm.setVisible(true);
                 }
             }
         });
@@ -230,8 +232,6 @@ public class SiteTrafficForm extends javax.swing.JFrame {
         users.setForeground(new java.awt.Color(102, 102, 102));
         users.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null}
             },

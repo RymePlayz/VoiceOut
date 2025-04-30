@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 public class RegisterForm extends javax.swing.JFrame {
@@ -24,9 +25,9 @@ public class RegisterForm extends javax.swing.JFrame {
                 dispose();
             }
         });
-        
-        this.getRootPane().getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enterPressed");
-        this.getRootPane().getActionMap().put("enterPressed", new AbstractAction() {
+
+        addressFld.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enterPressed");
+        addressFld.getActionMap().put("enterPressed", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 registerBtnActionPerformed(new ActionEvent(registerBtn, ActionEvent.ACTION_PERFORMED, "Enter Key Pressed"));
@@ -184,15 +185,6 @@ public class RegisterForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
-        usernameFld.setName("EphillID");
-        passwordFld.setName("EphillID");
-        nameFld.setName("EphillID");
-        ageFld.setName("EphillID");
-        emailFld.setName("EphillID");
-        contactNumFld.setName("EphillID");
-        addressFld.setName("EphillID");
-        genderCBox.setName("EphillID");
-
         String username = usernameFld.getText().trim();
         String password = passwordFld.getText().trim();
         String name = nameFld.getText().trim();
@@ -202,16 +194,22 @@ public class RegisterForm extends javax.swing.JFrame {
         String address = usernameFld.getText().trim();
         String gender = genderCBox.getSelectedItem().toString();
 
-        IValidation validator = new ValidationWithOption(null);
-
+        ValidationManager validator = new ValidationManager() {
+            @Override
+            public boolean validateFields(JTextField... fields) {
+                return super.validateFields(fields);
+            }
+        };
         if (username.isEmpty()) {
-            validator.addCustomError("• EphillID must not be blank!");
-        } else if (!username.matches("\\d+") || username.length() != 6) {
-            validator.addCustomError("• EphillID must valid!");
+            validator.addCustomError("• EphillID must not be blank");
+        } else if (!username.matches("\\d+")) { // ✅ Check if it's numeric
+            validator.addCustomError("• EphillID must be valid");
+        } else if (username.length() < 6) { // ✅ Check if it's less than 6
+            validator.addCustomError("• EphillID must be at least 6 digits long!");
         }
 
         if (password.isEmpty()) {
-            validator.addCustomError("• Password must not be blank!");
+            validator.addCustomError("• Password must not be blank");
         } else if (password.length() < 6) {
             validator.addCustomError("• Password must be 6 Character long");
         }
@@ -228,7 +226,7 @@ public class RegisterForm extends javax.swing.JFrame {
             int ageValue = Integer.parseInt(age);
 
             if (ageValue < 12) {
-                validator.addCustomError("• Age must be a least 12.");
+                validator.addCustomError("• Age must be a least 13.");
             }
         }
 
