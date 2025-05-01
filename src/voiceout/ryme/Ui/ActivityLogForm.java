@@ -292,38 +292,38 @@ public class ActivityLogForm extends javax.swing.JFrame {
         createdAt1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         content1 = new javax.swing.JTextArea();
-        donationGoal1 = new javax.swing.JTextField();
-        donationRecieved1 = new javax.swing.JTextField();
         commentSec1 = new javax.swing.JButton();
         deleteBtn1 = new javax.swing.JButton();
         likes1 = new javax.swing.JLabel();
+        donationGoal1 = new javax.swing.JLabel();
+        donationRecieved1 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         createdAt2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         content2 = new javax.swing.JTextArea();
-        donationGoal2 = new javax.swing.JTextField();
-        donationRecieved2 = new javax.swing.JTextField();
         commentSec2 = new javax.swing.JButton();
         deleteBtn2 = new javax.swing.JButton();
         likes2 = new javax.swing.JLabel();
+        donationGoal2 = new javax.swing.JLabel();
+        donationRecieved2 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         createdAt3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         content3 = new javax.swing.JTextArea();
-        donationGoal3 = new javax.swing.JTextField();
-        donationRecieved3 = new javax.swing.JTextField();
         commentSec3 = new javax.swing.JButton();
         deleteBtn3 = new javax.swing.JButton();
         likes3 = new javax.swing.JLabel();
+        donationGoal3 = new javax.swing.JLabel();
+        donationRecieved3 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         createdAt4 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         content4 = new javax.swing.JTextArea();
-        donationGoal4 = new javax.swing.JTextField();
-        donationRecieved4 = new javax.swing.JTextField();
         commentSec4 = new javax.swing.JButton();
         deleteBtn4 = new javax.swing.JButton();
         likes4 = new javax.swing.JLabel();
+        donationGoal4 = new javax.swing.JLabel();
+        donationRecieved4 = new javax.swing.JLabel();
         refreshBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
 
@@ -441,18 +441,6 @@ public class ActivityLogForm extends javax.swing.JFrame {
 
         like1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 41, 514, -1));
 
-        donationGoal1.setEditable(false);
-        donationGoal1.setBackground(new java.awt.Color(102, 102, 102));
-        donationGoal1.setForeground(new java.awt.Color(255, 255, 255));
-        donationGoal1.setText("donation goal");
-        like1.add(donationGoal1, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 41, -1, -1));
-
-        donationRecieved1.setEditable(false);
-        donationRecieved1.setBackground(new java.awt.Color(102, 102, 102));
-        donationRecieved1.setForeground(new java.awt.Color(255, 255, 255));
-        donationRecieved1.setText("donation recieveed");
-        like1.add(donationRecieved1, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 70, -1, -1));
-
         commentSec1.setBackground(new java.awt.Color(102, 102, 102));
         commentSec1.setForeground(new java.awt.Color(255, 255, 255));
         commentSec1.setText("Comments");
@@ -477,6 +465,14 @@ public class ActivityLogForm extends javax.swing.JFrame {
         likes1.setText("likes");
         like1.add(likes1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 100, 130, -1));
 
+        donationGoal1.setForeground(new java.awt.Color(255, 255, 255));
+        donationGoal1.setText("doantion goal");
+        like1.add(donationGoal1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 60, 130, 20));
+
+        donationRecieved1.setForeground(new java.awt.Color(255, 255, 255));
+        donationRecieved1.setText("donation recieved");
+        like1.add(donationRecieved1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 80, 130, 20));
+
         jPanel3.add(like1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 30, 790, 180));
 
         jPanel5.setBackground(new java.awt.Color(51, 51, 51));
@@ -495,18 +491,6 @@ public class ActivityLogForm extends javax.swing.JFrame {
         jScrollPane2.setViewportView(content2);
 
         jPanel5.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 35, 514, -1));
-
-        donationGoal2.setEditable(false);
-        donationGoal2.setBackground(new java.awt.Color(102, 102, 102));
-        donationGoal2.setForeground(new java.awt.Color(255, 255, 255));
-        donationGoal2.setText("donation goal");
-        jPanel5.add(donationGoal2, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 35, -1, -1));
-
-        donationRecieved2.setEditable(false);
-        donationRecieved2.setBackground(new java.awt.Color(102, 102, 102));
-        donationRecieved2.setForeground(new java.awt.Color(255, 255, 255));
-        donationRecieved2.setText("donation recieveed");
-        jPanel5.add(donationRecieved2, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 64, -1, -1));
 
         commentSec2.setBackground(new java.awt.Color(102, 102, 102));
         commentSec2.setForeground(new java.awt.Color(255, 255, 255));
@@ -532,6 +516,14 @@ public class ActivityLogForm extends javax.swing.JFrame {
         likes2.setText("likes");
         jPanel5.add(likes2, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 90, 130, 20));
 
+        donationGoal2.setForeground(new java.awt.Color(255, 255, 255));
+        donationGoal2.setText("doantion goal");
+        jPanel5.add(donationGoal2, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 50, 130, 20));
+
+        donationRecieved2.setForeground(new java.awt.Color(255, 255, 255));
+        donationRecieved2.setText("donation recieved");
+        jPanel5.add(donationRecieved2, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 70, 130, 20));
+
         jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 230, 790, 170));
 
         jPanel6.setBackground(new java.awt.Color(51, 51, 51));
@@ -550,18 +542,6 @@ public class ActivityLogForm extends javax.swing.JFrame {
         jScrollPane3.setViewportView(content3);
 
         jPanel6.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 35, 514, -1));
-
-        donationGoal3.setEditable(false);
-        donationGoal3.setBackground(new java.awt.Color(102, 102, 102));
-        donationGoal3.setForeground(new java.awt.Color(255, 255, 255));
-        donationGoal3.setText("donation goal");
-        jPanel6.add(donationGoal3, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 35, -1, -1));
-
-        donationRecieved3.setEditable(false);
-        donationRecieved3.setBackground(new java.awt.Color(102, 102, 102));
-        donationRecieved3.setForeground(new java.awt.Color(255, 255, 255));
-        donationRecieved3.setText("donation recieveed");
-        jPanel6.add(donationRecieved3, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 64, -1, -1));
 
         commentSec3.setBackground(new java.awt.Color(102, 102, 102));
         commentSec3.setForeground(new java.awt.Color(255, 255, 255));
@@ -587,6 +567,14 @@ public class ActivityLogForm extends javax.swing.JFrame {
         likes3.setText("likes");
         jPanel6.add(likes3, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 90, 130, 20));
 
+        donationGoal3.setForeground(new java.awt.Color(255, 255, 255));
+        donationGoal3.setText("doantion goal");
+        jPanel6.add(donationGoal3, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 50, 130, 20));
+
+        donationRecieved3.setForeground(new java.awt.Color(255, 255, 255));
+        donationRecieved3.setText("donation recieved");
+        jPanel6.add(donationRecieved3, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 70, 130, 20));
+
         jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 430, 790, 170));
 
         jPanel7.setBackground(new java.awt.Color(51, 51, 51));
@@ -605,18 +593,6 @@ public class ActivityLogForm extends javax.swing.JFrame {
         jScrollPane4.setViewportView(content4);
 
         jPanel7.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 35, 514, -1));
-
-        donationGoal4.setEditable(false);
-        donationGoal4.setBackground(new java.awt.Color(102, 102, 102));
-        donationGoal4.setForeground(new java.awt.Color(255, 255, 255));
-        donationGoal4.setText("donation goal");
-        jPanel7.add(donationGoal4, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 35, -1, -1));
-
-        donationRecieved4.setEditable(false);
-        donationRecieved4.setBackground(new java.awt.Color(102, 102, 102));
-        donationRecieved4.setForeground(new java.awt.Color(255, 255, 255));
-        donationRecieved4.setText("donation recieveed");
-        jPanel7.add(donationRecieved4, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 64, -1, -1));
 
         commentSec4.setBackground(new java.awt.Color(102, 102, 102));
         commentSec4.setForeground(new java.awt.Color(255, 255, 255));
@@ -641,6 +617,14 @@ public class ActivityLogForm extends javax.swing.JFrame {
         likes4.setForeground(new java.awt.Color(255, 255, 255));
         likes4.setText("likes");
         jPanel7.add(likes4, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 90, 130, 20));
+
+        donationGoal4.setForeground(new java.awt.Color(255, 255, 255));
+        donationGoal4.setText("doantion goal");
+        jPanel7.add(donationGoal4, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 50, 130, 20));
+
+        donationRecieved4.setForeground(new java.awt.Color(255, 255, 255));
+        donationRecieved4.setText("donation recieved");
+        jPanel7.add(donationRecieved4, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 70, 130, 20));
 
         jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 630, 790, 170));
 
@@ -763,14 +747,14 @@ public class ActivityLogForm extends javax.swing.JFrame {
     private javax.swing.JButton deleteBtn2;
     private javax.swing.JButton deleteBtn3;
     private javax.swing.JButton deleteBtn4;
-    private javax.swing.JTextField donationGoal1;
-    private javax.swing.JTextField donationGoal2;
-    private javax.swing.JTextField donationGoal3;
-    private javax.swing.JTextField donationGoal4;
-    private javax.swing.JTextField donationRecieved1;
-    private javax.swing.JTextField donationRecieved2;
-    private javax.swing.JTextField donationRecieved3;
-    private javax.swing.JTextField donationRecieved4;
+    private javax.swing.JLabel donationGoal1;
+    private javax.swing.JLabel donationGoal2;
+    private javax.swing.JLabel donationGoal3;
+    private javax.swing.JLabel donationGoal4;
+    private javax.swing.JLabel donationRecieved1;
+    private javax.swing.JLabel donationRecieved2;
+    private javax.swing.JLabel donationRecieved3;
+    private javax.swing.JLabel donationRecieved4;
     private javax.swing.JLabel goToAboutUs;
     private javax.swing.JLabel goToActivtyLog;
     private javax.swing.JLabel goToDashboard;

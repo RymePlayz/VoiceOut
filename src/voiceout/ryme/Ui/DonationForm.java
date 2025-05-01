@@ -7,13 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import voiceout.ryme.Helper.CurrentSession;
 
 public class DonationForm extends javax.swing.JFrame {
 
     public DonationForm() {
         initComponents();
-        updateDonationReceived(donation_recieved);
+        updateDonationReceived(donation_recieved, donation); // ✅ Pass donation field to updateDonationReceived()
 
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -75,37 +76,46 @@ public class DonationForm extends javax.swing.JFrame {
 
     }
 
-    private void updateDonationReceived(JLabel donation_recieved) {
+    private void updateDonationReceived(JLabel donation_recieved, JTextField donationField) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/voiceout", "root", "")) {
-            String query = "SELECT donation_received FROM site_donation ORDER BY donation_site_id DESC LIMIT 1";
+            String query = "SELECT donation_received FROM site_donation";
             PreparedStatement pst = conn.prepareStatement(query);
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
-                donation_recieved.setText("Donated Amount: " + rs.getLong("donation_received"));
+                long receivedAmount = rs.getLong("donation_received");
+                donation_recieved.setText("Donated Amount: " + receivedAmount);
+                donationField.setText(String.valueOf(receivedAmount)); // ✅ Updates JTextField
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateDonation() {
+    private void updateDonation(JTextField donationField) {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/voiceout", "root", "")) {
-            String query = "UPDATE site_donation SET donation_received = donation_received + ? ORDER BY donation_site_id DESC LIMIT 1";
+            String query = "UPDATE site_donation SET donation_received = donation_received + ?";
             PreparedStatement pst = conn.prepareStatement(query);
 
-            long donationAmount = Long.parseLong(donation.getText());
+            String donationText = donationField.getText();
+            if (!donationText.matches("\\d+")) { // ✅ Validates numeric input
+                JOptionPane.showMessageDialog(null, "Invalid donation amount.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            long donationAmount = Long.parseLong(donationText);
             pst.setLong(1, donationAmount);
 
             int rowsUpdated = pst.executeUpdate();
             if (rowsUpdated > 0) {
-                JOptionPane.showMessageDialog(this, "Donation updated successfully! Thanks For supporting My Work", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Donation updated successfully! Thanks for supporting my work!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                updateDonationReceived(donation_recieved, donationField); // ✅ Refresh JTextField after update
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to update donation.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Failed to update donation.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException | NumberFormatException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Invalid donation amount.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Database error while updating donation.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -273,9 +283,8 @@ public class DonationForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void doanteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doanteBtnActionPerformed
-        updateDonation();
-        updateDonationReceived(donation_recieved);
-
+        updateDonation(donation); // ✅ Pass donation field to updateDonation()
+        updateDonationReceived(donation_recieved, donation); // ✅ Pass donation field to updateDonationReceived()
         donation.setText("");
     }//GEN-LAST:event_doanteBtnActionPerformed
 
