@@ -93,7 +93,6 @@ public class Dashboard extends javax.swing.JFrame {
         });
     }
 
-    // ✅ Gets total number of posts in user_post table
     public int getPostCount() {
         try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("SELECT COUNT(*) FROM user_post"); ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
@@ -105,14 +104,12 @@ public class Dashboard extends javax.swing.JFrame {
         return 0;
     }
 
-    // ✅ Updates UI with user posts
     public void updatePostComponents(int userId, int postLimit) {
         try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(
                 "SELECT up.post_id, up.name, up.content, up.donation_goal, up.donation_received, up.likes, u.username "
                 + "FROM user_post up "
                 + "JOIN users u ON up.user_id = u.user_id "
-                + // ✅ Join users table to get username
-                "ORDER BY RAND() LIMIT ?")) {
+                + "ORDER BY RAND() LIMIT ?")) {
 
             pstmt.setInt(1, postLimit);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -123,35 +120,35 @@ public class Dashboard extends javax.swing.JFrame {
                     String content = rs.getString("content");
                     double donationGoal = rs.getDouble("donation_goal");
                     double donationReceived = rs.getDouble("donation_received");
-                    int likes = rs.getInt("likes"); // ✅ Get likes count
-                    String username = rs.getString("username"); // ✅ Get username from `users` table
+                    int likes = rs.getInt("likes"); 
+                    String username = rs.getString("username"); 
 
                     switch (index) {
                         case 1:
                             content1.setText(content);
                             name1.setText(name);
-                            username1.setText(username); // ✅ Update username1
+                            username1.setText(username); 
                             donationGoal1.setText("Goal: " + donationGoal);
                             donationRecieved1.setText("Received: " + donationReceived);
-                            likes1.setText("Likes: " + likes); // ✅ Update likes1
+                            likes1.setText("Likes: " + likes); 
                             postId1 = postId;
                             break;
                         case 2:
                             content2.setText(content);
                             name2.setText(name);
-                            username2.setText(username); // ✅ Update username2
+                            username2.setText(username);
                             donationGoal2.setText("Goal: " + donationGoal);
                             donationRecieved2.setText("Received: " + donationReceived);
-                            likes2.setText("Likes: " + likes); // ✅ Update likes2
+                            likes2.setText("Likes: " + likes);
                             postId2 = postId;
                             break;
                         case 3:
                             content3.setText(content);
                             name3.setText(name);
-                            username3.setText(username); // ✅ Update username3
+                            username3.setText(username);
                             donationGoal3.setText("Goal: " + donationGoal);
                             donationRecieved3.setText("Received: " + donationReceived);
-                            likes3.setText("Likes: " + likes); // ✅ Update likes3
+                            likes3.setText("Likes: " + likes); 
                             postId3 = postId;
                             break;
                     }
@@ -170,25 +167,23 @@ public class Dashboard extends javax.swing.JFrame {
         }
 
         try (Connection conn = DBConnection.getConnection()) {
-            conn.setAutoCommit(false); // ✅ Transaction start
+            conn.setAutoCommit(false); 
 
-            // ✅ Update the likes count in user_post table
             try (PreparedStatement pstmt = conn.prepareStatement("UPDATE user_post SET likes = likes + 1 WHERE post_id = ?")) {
                 pstmt.setInt(1, postId);
                 pstmt.executeUpdate();
             }
 
-            // ✅ Track that this user liked the post
             try (PreparedStatement pstmt = conn.prepareStatement("UPDATE users SET liked_posts = CONCAT(IFNULL(liked_posts, ''), ',', ?) WHERE user_id = ?")) {
                 pstmt.setInt(1, postId);
                 pstmt.setInt(2, userId);
                 pstmt.executeUpdate();
             }
 
-            conn.commit(); // ✅ Commit transaction
+            conn.commit(); 
 
             JOptionPane.showMessageDialog(null, "Post liked successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            updateLikesDisplay(postId); // ✅ Refresh likes count in UI
+            updateLikesDisplay(postId);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -201,7 +196,6 @@ public class Dashboard extends javax.swing.JFrame {
                 if (rs.next()) {
                     int updatedLikes = rs.getInt("likes");
 
-                    // ✅ Update UI based on postId
                     if (postId == postId1) {
                         likes1.setText("Likes: " + updatedLikes);
                     } else if (postId == postId2) {
@@ -225,7 +219,7 @@ public class Dashboard extends javax.swing.JFrame {
             case 3:
                 return postId3;
             default:
-                return -1; // Return -1 if index is invalid
+                return -1;
         }
     }
 
@@ -251,7 +245,7 @@ public class Dashboard extends javax.swing.JFrame {
             case 3:
                 return donationRecieved3;
             default:
-                return null; // Return null if index is invalid
+                return null; 
         }
     }
 
@@ -267,7 +261,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         double donationAmount;
         try {
-            donationAmount = Double.parseDouble(donationField.getText().trim()); // ✅ Ensures no spaces or invalid input
+            donationAmount = Double.parseDouble(donationField.getText().trim());
             if (donationAmount <= 0) {
                 JOptionPane.showMessageDialog(null, "Invalid donation amount. Please enter a positive value.", "Donation Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -293,12 +287,11 @@ public class Dashboard extends javax.swing.JFrame {
                         updatedReceived = rs.getDouble("donation_received") + amount;
                     } else {
                         JOptionPane.showMessageDialog(null, "Error: Post ID not found.", "Database Error", JOptionPane.ERROR_MESSAGE);
-                        return 0.0; // Exit if postId does not exist
+                        return 0.0;
                     }
                 }
             }
 
-            // ✅ Update donation amount in the database
             try (PreparedStatement updateStmt = conn.prepareStatement("UPDATE user_post SET donation_received = ? WHERE post_id = ?")) {
                 updateStmt.setDouble(1, updatedReceived);
                 updateStmt.setInt(2, postId);
@@ -311,7 +304,7 @@ public class Dashboard extends javax.swing.JFrame {
             return 0.0;
         }
 
-        return updatedReceived; // ✅ Returns new received amount
+        return updatedReceived;
     }
 
     public boolean hasUserLikedPost(int userId, int postId) {
@@ -357,19 +350,18 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     private void openCommentUI(int postIndex) {
-        int postId = getPostIdForComponent(postIndex); // Retrieve correct post ID
+        int postId = getPostIdForComponent(postIndex); 
         if (postId <= 0) {
             JOptionPane.showMessageDialog(null, "Error: Invalid post.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // ✅ Open the Comment UI and pass post ID
         Comment commentUI = new Comment(postId);
         this.setVisible(false);
         commentUI.setVisible(true);
 
     }
-    private static int selectedPostIndex = -1; // ✅ Stores selected post index
+    private static int selectedPostIndex = -1; 
 
     public static void setSelectedPostIndex(int postIndex) {
         selectedPostIndex = postIndex;
@@ -813,18 +805,16 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         CurrentSession session = CurrentSession.getInstance();
-        int userId = session.getUserId(); // Logged-in user's ID
-        String name = session.getName(); // User's name
+        int userId = session.getUserId(); 
+        String name = session.getName();
         String content = contentPostFld.getText();
         String donationGoalStr = donationGoalPost.getText();
 
-        // Validate content input
         if (content.trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Post content cannot be empty!", "Err   or", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Validate and parse donation goal input safely
         double donationGoal = 0.0;
         try {
             if (!donationGoalStr.isEmpty()) {
@@ -845,8 +835,8 @@ public class Dashboard extends javax.swing.JFrame {
                 pst.setString(2, name);
                 pst.setString(3, content);
                 pst.setDouble(4, donationGoal);
-                pst.setDouble(5, 0.0); // Initial donation received
-                pst.setInt(6, 0); // Initial likes
+                pst.setDouble(5, 0.0);
+                pst.setInt(6, 0);
 
                 pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Post added successfully!");
@@ -860,7 +850,6 @@ public class Dashboard extends javax.swing.JFrame {
     private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
         int userId = (CurrentSession.getInstance() != null) ? CurrentSession.getInstance().getUserId() : -1;
 
-        // ✅ Reset UI components before refreshing data
         content1.setText("");
         username1.setText("");
         name1.setText("");
@@ -876,10 +865,9 @@ public class Dashboard extends javax.swing.JFrame {
         name3.setText("");
         donationRecieved3.setText("");
 
-        int postCount = getPostCount(); // ✅ Get total number of posts
+        int postCount = getPostCount(); 
 
         if (postCount == 0) {
-            // ✅ Disable all components when there are no posts
             like1.setEnabled(false);
             like2.setEnabled(false);
             like3.setEnabled(false);
@@ -897,7 +885,6 @@ public class Dashboard extends javax.swing.JFrame {
             content3.setText("No posts available.");
 
         } else {
-            // ✅ Dynamically enable the correct number of posts
             like1.setEnabled(postCount >= 1);
             like2.setEnabled(postCount >= 2);
             like3.setEnabled(postCount >= 3);
@@ -910,7 +897,7 @@ public class Dashboard extends javax.swing.JFrame {
             commentSec2.setEnabled(postCount >= 2);
             commentSec3.setEnabled(postCount >= 3);
 
-            updatePostComponents(userId, Math.min(postCount, 3)); // ✅ Ensure we update up to 3 posts
+            updatePostComponents(userId, Math.min(postCount, 3));
         }
 
     }//GEN-LAST:event_refreshActionPerformed

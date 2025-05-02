@@ -6,7 +6,6 @@ import voiceout.ryme.Oop.*;
 import voiceout.ryme.Helper.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -202,9 +201,9 @@ public class RegisterForm extends javax.swing.JFrame {
         };
         if (username.isEmpty()) {
             validator.addCustomError("• EphillID must not be blank");
-        } else if (!username.matches("\\d+")) { // ✅ Check if it's numeric
+        } else if (!username.matches("\\d+")) {
             validator.addCustomError("• EphillID must be valid");
-        } else if (username.length() < 6) { // ✅ Check if it's less than 6
+        } else if (username.length() < 6) {
             validator.addCustomError("• EphillID must be at least 6 digits long!");
         }
 
@@ -232,7 +231,7 @@ public class RegisterForm extends javax.swing.JFrame {
 
         if (email.isEmpty()) {
             validator.addCustomError("• Email must not be blank");
-        } else if (!email.matches("^[\\w.-]+@gmail\\.com$")) {
+        } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|hotmail\\.com|yahoo\\.com|icloud\\.com|live\\.com)$")) {
             validator.addCustomError("• Email must be valid");
         }
 
@@ -268,6 +267,13 @@ public class RegisterForm extends javax.swing.JFrame {
 
             if (rowsAffected > 0) {
                 JOptionPane.showMessageDialog(null, "Registration successful!");
+                usernameFld.setText("");
+                passwordFld.setText("");
+                nameFld.setText("");
+                ageFld.setText("");
+                emailFld.setText("");
+                contactNumFld.setText("");
+                addressFld.setText("");
             } else {
                 JOptionPane.showMessageDialog(null, "Registration failed. Please try again.");
             }

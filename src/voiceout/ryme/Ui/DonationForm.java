@@ -14,7 +14,7 @@ public class DonationForm extends javax.swing.JFrame {
 
     public DonationForm() {
         initComponents();
-        updateDonationReceived(donation_recieved, donation); // ✅ Pass donation field to updateDonationReceived()
+        updateDonationReceived(donation_recieved, donation); 
 
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -85,7 +85,7 @@ public class DonationForm extends javax.swing.JFrame {
             if (rs.next()) {
                 long receivedAmount = rs.getLong("donation_received");
                 donation_recieved.setText("Donated Amount: " + receivedAmount);
-                donationField.setText(String.valueOf(receivedAmount)); // ✅ Updates JTextField
+                donationField.setText(String.valueOf(receivedAmount)); 
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,7 +98,7 @@ public class DonationForm extends javax.swing.JFrame {
             PreparedStatement pst = conn.prepareStatement(query);
 
             String donationText = donationField.getText();
-            if (!donationText.matches("\\d+")) { // ✅ Validates numeric input
+            if (!donationText.matches("\\d+")) { 
                 JOptionPane.showMessageDialog(null, "Invalid donation amount.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -109,7 +109,7 @@ public class DonationForm extends javax.swing.JFrame {
             int rowsUpdated = pst.executeUpdate();
             if (rowsUpdated > 0) {
                 JOptionPane.showMessageDialog(null, "Donation updated successfully! Thanks for supporting my work!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                updateDonationReceived(donation_recieved, donationField); // ✅ Refresh JTextField after update
+                updateDonationReceived(donation_recieved, donationField);
             } else {
                 JOptionPane.showMessageDialog(null, "Failed to update donation.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -283,8 +283,8 @@ public class DonationForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void doanteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doanteBtnActionPerformed
-        updateDonation(donation); // ✅ Pass donation field to updateDonation()
-        updateDonationReceived(donation_recieved, donation); // ✅ Pass donation field to updateDonationReceived()
+        updateDonation(donation); 
+        updateDonationReceived(donation_recieved, donation); 
         donation.setText("");
     }//GEN-LAST:event_doanteBtnActionPerformed
 

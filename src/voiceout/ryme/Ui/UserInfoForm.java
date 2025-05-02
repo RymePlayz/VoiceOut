@@ -14,8 +14,8 @@ import javax.swing.table.DefaultTableModel;
 public class UserInfoForm extends javax.swing.JFrame {
 
     public UserInfoForm() {
-        initComponents(); // ✅ Initialize UI components
-        showCurrentUserData(); // ✅ Load user data from current session
+        initComponents(); 
+        showCurrentUserData();
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -79,14 +79,12 @@ public class UserInfoForm extends javax.swing.JFrame {
         CurrentSession session = CurrentSession.getInstance();
         DefaultTableModel model = (DefaultTableModel) user_edit_table.getModel();
 
-        // ✅ Clear existing rows to prevent duplication
         model.setRowCount(0);
 
-        // ✅ Add current session data as a row
         Object[] row = {
             session.getUserId(),
             session.getUsername(),
-            session.getPassword(), // ⚠️ Consider hashing passwords for security
+            session.getPassword(), 
             session.getName(),
             session.getAge(),
             session.getEmail(),
@@ -95,7 +93,7 @@ public class UserInfoForm extends javax.swing.JFrame {
             session.getGender()
         };
 
-        model.addRow(row); // ✅ Add row to the table
+        model.addRow(row); 
     }
 
     private void updateUserData() {
@@ -113,16 +111,14 @@ public class UserInfoForm extends javax.swing.JFrame {
             String address = (String) model.getValueAt(row, 7);
             String gender = (String) model.getValueAt(row, 8);
 
-            // ✅ Check for blank fields
             if (password.isEmpty() || name.isEmpty() || email.isEmpty() || contactNum.isEmpty() || address.isEmpty() || gender.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Error: All fields must be filled.", "Update Error", JOptionPane.ERROR_MESSAGE);
                 return; // Exit the method
             }
 
-            // ✅ Check password length (must be greater than 6)
             if (password.length() < 6) {
                 JOptionPane.showMessageDialog(null, "Error: Password must be at least 6 characters long.", "Update Error", JOptionPane.ERROR_MESSAGE);
-                return; // Exit the method
+                return;
             }
             JOptionPane.showMessageDialog(null, "Updated Succesfully!", "User Data Updated", JOptionPane.INFORMATION_MESSAGE);
 

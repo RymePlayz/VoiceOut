@@ -17,13 +17,12 @@ public class Comment extends javax.swing.JFrame {
 
     Connection conn = null;
     PreparedStatement pst = null;
-    
+
     public Comment(int postId) {
         initComponents();
-        
+
         conn = DBConnection.getConnection();
-        
-        
+
         this.postId = postId;
         this.currentUsername = (CurrentSession.getInstance() != null) ? CurrentSession.getInstance().getUsername() : "Unknown";
         this.currentName = (CurrentSession.getInstance() != null) ? CurrentSession.getInstance().getName() : "Anonymous";
@@ -117,16 +116,15 @@ public class Comment extends javax.swing.JFrame {
                 "SELECT up.name, up.content, up.donation_goal, up.donation_received, u.username "
                 + "FROM user_post up "
                 + "JOIN users u ON up.user_id = u.user_id "
-                + // ✅ Get username associated with post
-                "WHERE up.post_id = ?")) {
+                + "WHERE up.post_id = ?")) {
             pstmt.setInt(1, postId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     name.setText(rs.getString("name"));
                     content.setText(rs.getString("content"));
-                    username.setText(rs.getString("username")); // ✅ Show username
-                    donationGoal.setText("Goal: " + rs.getDouble("donation_goal")); // ✅ Update donation goal
-                    donationRecieved.setText("Received: " + rs.getDouble("donation_received")); // ✅ Update received amount
+                    username.setText(rs.getString("username"));
+                    donationGoal.setText("Goal: " + rs.getDouble("donation_goal"));
+                    donationRecieved.setText("Received: " + rs.getDouble("donation_received"));
                 }
             }
         } catch (SQLException e) {
@@ -141,8 +139,7 @@ public class Comment extends javax.swing.JFrame {
                 "SELECT uc.comment_content, uc.created_at, u.name AS commenter_name, u.username "
                 + "FROM user_comment uc "
                 + "JOIN users u ON uc.user_id = u.user_id "
-                + // ✅ Always fetch latest name
-                "WHERE uc.post_id = ? ORDER BY uc.created_at ASC")) {
+                + "WHERE uc.post_id = ? ORDER BY uc.created_at ASC")) {
 
             pstmt.setInt(1, postId);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -158,7 +155,7 @@ public class Comment extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
-        commentSec.setText(commentText.toString()); // ✅ Display formatted comments dynamically
+        commentSec.setText(commentText.toString());
     }
 
     private void submitComment() {
@@ -179,13 +176,12 @@ public class Comment extends javax.swing.JFrame {
             pstmt.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Comment posted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            loadComments(); // ✅ Refresh comment section after posting
+            loadComments();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // ✅ Prevent duplicate likes
     private void handleLikeAction() {
         int userId = CurrentSession.getInstance().getUserId();
 
@@ -215,7 +211,6 @@ public class Comment extends javax.swing.JFrame {
         }
     }
 
-    // ✅ Check if user already liked the post
     private boolean hasUserLikedPost(int userId, int postId) {
         try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("SELECT liked_posts FROM users WHERE user_id = ?")) {
             pstmt.setInt(1, userId);
@@ -231,7 +226,6 @@ public class Comment extends javax.swing.JFrame {
         return false;
     }
 
-    // ✅ Donation functionality (ensures latest values reflect database)
     private void handleDonationAction() {
         double donationAmount;
         try {
@@ -246,9 +240,9 @@ public class Comment extends javax.swing.JFrame {
         }
 
         double updatedReceived = updateDonationReceived(postId, donationAmount);
-        donationRecieved.setText("Received: " + updatedReceived); // ✅ Reflect updated donation amount
+        donationRecieved.setText("Received: " + updatedReceived);
         JOptionPane.showMessageDialog(null, "Thank you for your donation!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        loadPostData(); // ✅ Refresh post data after donation
+        loadPostData();
     }
 
     private double updateDonationReceived(int postId, double amount) {
@@ -533,7 +527,6 @@ public class Comment extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Comment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         java.awt.EventQueue.invokeLater(new Runnable() {

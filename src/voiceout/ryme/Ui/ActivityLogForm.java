@@ -186,8 +186,8 @@ public class ActivityLogForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
 
-        loadUserPosts(); // ✅ Load posts
-        disableExtraPostFields(postCount); // ✅ Ensure extra posts are hidden
+        loadUserPosts(); 
+        disableExtraPostFields(postCount);
     }
 
     private void disableExtraPostFields(int postCount) {
@@ -218,7 +218,7 @@ public class ActivityLogForm extends javax.swing.JFrame {
         commentSec2.setVisible(hasPost2);
         deleteBtn2.setVisible(hasPost2);
 
-        boolean hasPost1 = postCount >= 1; // ✅ Hide post 1 if no posts exist
+        boolean hasPost1 = postCount >= 1;
         content1.setVisible(hasPost1);
         donationGoal1.setVisible(hasPost1);
         donationRecieved1.setVisible(hasPost1);
@@ -229,7 +229,7 @@ public class ActivityLogForm extends javax.swing.JFrame {
     }
 
     private void viewComments(int postId) {
-        Comment commentUI = new Comment(postId); // ✅ Pass post ID dynamically
+        Comment commentUI = new Comment(postId);
         commentUI.setVisible(true);
     }
 
@@ -240,7 +240,6 @@ public class ActivityLogForm extends javax.swing.JFrame {
                 if (rs.next()) {
                     int updatedLikes = rs.getInt("likes");
 
-                    // ✅ Update corresponding UI element
                     if (postId == postId1) {
                         likes1.setText("Likes: " + updatedLikes);
                     } else if (postId == postId2) {
