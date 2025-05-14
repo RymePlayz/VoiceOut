@@ -1,5 +1,7 @@
 package voiceout.ryme.Ui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import voiceout.ryme.Helper.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +20,14 @@ public class ActivityLogForm extends javax.swing.JFrame {
 
     public ActivityLogForm() {
         conn = DBConnection.getConnection();
-
+addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
         initComponents();
         refreshActivityLog();
         loadUserPosts();
@@ -89,6 +98,7 @@ public class ActivityLogForm extends javax.swing.JFrame {
             String archive = "INSERT INTO archived_posts (post_id, user_id, content, donation_goal, donation_received, likes, created_at) "
                     + "SELECT post_id, user_id, content, donation_goal, donation_received, likes, created_at "
                     + "FROM user_post WHERE post_id = ? AND user_id = ?";
+            
             String deleteInActive = "DELETE FROM user_post WHERE post_id = ? AND user_id = ?";
 
             pst = conn.prepareStatement(archive);
@@ -326,7 +336,7 @@ public class ActivityLogForm extends javax.swing.JFrame {
         refreshBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -413,7 +423,7 @@ public class ActivityLogForm extends javax.swing.JFrame {
                 .addComponent(goToDonateToUs)
                 .addGap(18, 18, 18)
                 .addComponent(goToAboutUs)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 513, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 507, Short.MAX_VALUE)
                 .addComponent(jLabel7)
                 .addGap(79, 79, 79))
         );
@@ -436,6 +446,8 @@ public class ActivityLogForm extends javax.swing.JFrame {
         content1.setForeground(new java.awt.Color(255, 255, 255));
         content1.setRows(5);
         content1.setText("content\n");
+        content1.setCaretColor(new java.awt.Color(102, 102, 102));
+        content1.setDisabledTextColor(new java.awt.Color(102, 102, 102));
         jScrollPane1.setViewportView(content1);
 
         like1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 41, 514, -1));
@@ -487,6 +499,8 @@ public class ActivityLogForm extends javax.swing.JFrame {
         content2.setForeground(new java.awt.Color(255, 255, 255));
         content2.setRows(5);
         content2.setText("content\n");
+        content2.setCaretColor(new java.awt.Color(102, 102, 102));
+        content2.setDisabledTextColor(new java.awt.Color(102, 102, 102));
         jScrollPane2.setViewportView(content2);
 
         jPanel5.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 35, 514, -1));
@@ -538,6 +552,8 @@ public class ActivityLogForm extends javax.swing.JFrame {
         content3.setForeground(new java.awt.Color(255, 255, 255));
         content3.setRows(5);
         content3.setText("content\n");
+        content3.setCaretColor(new java.awt.Color(102, 102, 102));
+        content3.setDisabledTextColor(new java.awt.Color(102, 102, 102));
         jScrollPane3.setViewportView(content3);
 
         jPanel6.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 35, 514, -1));
@@ -589,6 +605,8 @@ public class ActivityLogForm extends javax.swing.JFrame {
         content4.setForeground(new java.awt.Color(255, 255, 255));
         content4.setRows(5);
         content4.setText("content\n");
+        content4.setCaretColor(new java.awt.Color(102, 102, 102));
+        content4.setDisabledTextColor(new java.awt.Color(102, 102, 102));
         jScrollPane4.setViewportView(content4);
 
         jPanel7.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(53, 35, 514, -1));

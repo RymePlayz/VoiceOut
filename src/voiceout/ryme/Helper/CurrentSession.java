@@ -1,5 +1,7 @@
 package voiceout.ryme.Helper;
 
+import static voiceout.ryme.Ui.RegisterForm.hashPasswordSHA256;
+
 public class CurrentSession {
 
     private static CurrentSession instance;
@@ -45,8 +47,8 @@ public class CurrentSession {
     }
 
     public void setPassword(String password) {
-        this.password = password;
-    } 
+        this.password = hashPasswordSHA256(password);
+    }
 
     public String getContactNumber() {
         return contactNumber;

@@ -1,26 +1,24 @@
 package voiceout.ryme.Ui;
 
-import javax.swing.table.DefaultTableModel;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import voiceout.ryme.Helper.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableModel;
+import static voiceout.ryme.Ui.RegisterForm.hashPasswordSHA256;
+import java.sql.ResultSet;
 
 public class UserInfoForm extends javax.swing.JFrame {
 
     public UserInfoForm() {
-        initComponents(); 
-        showCurrentUserData();
-        goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
+        initComponents();
+        addWindowListener(new WindowAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void windowClosing(WindowEvent e) {
                 Dashboard dashboard = new Dashboard();
-                dashboard.setVisible(true);
+                dashboard.show();
                 dispose();
             }
         });
@@ -59,6 +57,15 @@ public class UserInfoForm extends javax.swing.JFrame {
                 dispose();
             }
         });
+
+        goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ActivityLogForm activityLogForm = new ActivityLogForm();
+                activityLogForm.setVisible(true);
+                dispose();
+            }
+        });
         logout.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -75,86 +82,11 @@ public class UserInfoForm extends javax.swing.JFrame {
         });
     }
 
-    private void showCurrentUserData() {
-        CurrentSession session = CurrentSession.getInstance();
-        DefaultTableModel model = (DefaultTableModel) user_edit_table.getModel();
-
-        model.setRowCount(0);
-
-        Object[] row = {
-            session.getUserId(),
-            session.getUsername(),
-            session.getPassword(), 
-            session.getName(),
-            session.getAge(),
-            session.getEmail(),
-            session.getContactNumber(),
-            session.getAddress(),
-            session.getGender()
-        };
-
-        model.addRow(row); 
-    }
-
-    private void updateUserData() {
-        DefaultTableModel model = (DefaultTableModel) user_edit_table.getModel();
-        int rowCount = model.getRowCount();
-
-        for (int row = 0; row < rowCount; row++) {
-            int userId = (int) model.getValueAt(row, 0);
-            String username = (String) model.getValueAt(row, 1);
-            String password = (String) model.getValueAt(row, 2);
-            String name = (String) model.getValueAt(row, 3);
-            int age = Integer.parseInt(model.getValueAt(row, 4).toString());
-            String email = (String) model.getValueAt(row, 5);
-            String contactNum = (String) model.getValueAt(row, 6);
-            String address = (String) model.getValueAt(row, 7);
-            String gender = (String) model.getValueAt(row, 8);
-
-            if (password.isEmpty() || name.isEmpty() || email.isEmpty() || contactNum.isEmpty() || address.isEmpty() || gender.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Error: All fields must be filled.", "Update Error", JOptionPane.ERROR_MESSAGE);
-                return; // Exit the method
-            }
-
-            if (password.length() < 6) {
-                JOptionPane.showMessageDialog(null, "Error: Password must be at least 6 characters long.", "Update Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            JOptionPane.showMessageDialog(null, "Updated Succesfully!", "User Data Updated", JOptionPane.INFORMATION_MESSAGE);
-
-            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/voiceout", "root", "")) {
-                String query = "UPDATE users SET password=?, name=?, age=?, email=?, contact_num=?, address=?, gender=? WHERE user_id=?";
-                PreparedStatement pst = conn.prepareStatement(query);
-
-                pst.setString(1, password);
-                pst.setString(2, name);
-                pst.setInt(3, age);
-                pst.setString(4, email);
-                pst.setString(5, contactNum);
-                pst.setString(6, address);
-                pst.setString(7, gender);
-                pst.setInt(8, userId);
-
-                int updated = pst.executeUpdate();
-                if (updated > 0) {
-                    updateCurrentSession(userId, password, name, age, email, contactNum, address, gender);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void updateCurrentSession(int userId, String password, String name, int age, String email, String contactNum, String address, String gender) {
-        CurrentSession session = CurrentSession.getInstance();
-        session.setUserId(userId);
-        session.setPassword(password);
-        session.setName(name);
-        session.setAge(age);
-        session.setEmail(email);
-        session.setContactNumber(contactNum);
-        session.setAddress(address);
-        session.setGender(gender);
+    public void refreshProfile() {
+        CurrentSession currentSession = new CurrentSession();
+        String name = currentSession.getName();
+        int age = currentSession.getAge();
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -174,17 +106,34 @@ public class UserInfoForm extends javax.swing.JFrame {
         goToDashboard = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        user_edit_table = new javax.swing.JTable();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         updateBtn = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        ephillIdFld = new javax.swing.JTextField();
+        contactNumFld = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
+        logoutBtn = new javax.swing.JButton();
+        emailFld = new javax.swing.JTextField();
+        addressFld = new javax.swing.JTextField();
+        passFld = new javax.swing.JTextField();
+        nameFld = new javax.swing.JTextField();
+        ageFld = new javax.swing.JTextField();
+        genderFld = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
         jPanel2.setPreferredSize(new java.awt.Dimension(1400, 950));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(63, 94, 171));
 
@@ -271,98 +220,125 @@ public class UserInfoForm extends javax.swing.JFrame {
                 .addGap(79, 79, 79))
         );
 
-        jLabel8.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
+        jLabel8.setFont(new java.awt.Font("Inter", 1, 36)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("User Info");
+        jLabel8.setText("Update INFO");
+        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 50, -1, -1));
 
         jLabel10.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setText("User Info");
+        jLabel10.setText("Password:");
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 550, -1, -1));
 
-        user_edit_table.setBackground(new java.awt.Color(102, 102, 102));
-        user_edit_table.setFont(new java.awt.Font("Inter", 0, 18)); // NOI18N
-        user_edit_table.setForeground(new java.awt.Color(255, 255, 255));
-        user_edit_table.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "User ID", "EPhillID", "Password", "Name", "Age", "Email", "Contact #", "Address", "Gender"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, true, true, false, true, true, true, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(user_edit_table);
-        if (user_edit_table.getColumnModel().getColumnCount() > 0) {
-            user_edit_table.getColumnModel().getColumn(0).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(1).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(2).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(3).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(4).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(5).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(6).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(7).setResizable(false);
-            user_edit_table.getColumnModel().getColumn(8).setResizable(false);
-        }
-
-        jLabel11.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel11.setText("Under Contruction");
-        jLabel11.setToolTipText("admin panel below");
-
-        jLabel9.setFont(new java.awt.Font("Inter", 1, 10)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Double row to edit");
-
+        updateBtn.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         updateBtn.setText("Update");
         updateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 updateBtnActionPerformed(evt);
             }
         });
+        jPanel2.add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 600, 192, 35));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel11)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(updateBtn)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel9)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1010, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+        jLabel12.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setText("EPhillID:");
+        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 132, -1, -1));
+
+        jLabel13.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setText("Name:");
+        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 180, -1, -1));
+
+        jLabel11.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("Age:");
+        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 228, -1, -1));
+
+        jLabel14.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setText("Email:");
+        jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 390, -1, -1));
+
+        jLabel15.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel15.setText("Contact Number:");
+        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 450, -1, -1));
+
+        jLabel16.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("Gender:");
+        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 282, -1, -1));
+
+        jLabel17.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("Address:");
+        jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 500, -1, -1));
+
+        jLabel18.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setText("Account Creation Date:");
+        jPanel2.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 910, -1, -1));
+
+        ephillIdFld.setEditable(false);
+        ephillIdFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(ephillIdFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(924, 129, 455, -1));
+
+        contactNumFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(contactNumFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 440, 455, -1));
+
+        jLabel19.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel2.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(1069, 433, -1, -1));
+
+        logoutBtn.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        logoutBtn.setText("Logout");
+        logoutBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutBtnActionPerformed(evt);
+            }
+        });
+        jPanel2.add(logoutBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1200, 600, 179, 35));
+
+        emailFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(emailFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 390, 455, -1));
+
+        addressFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(addressFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 490, 455, -1));
+
+        passFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(passFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 540, 455, -1));
+
+        nameFld.setEditable(false);
+        nameFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(nameFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(924, 177, 455, -1));
+
+        ageFld.setEditable(false);
+        ageFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(ageFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(924, 225, 455, -1));
+
+        genderFld.setEditable(false);
+        genderFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
+        jPanel2.add(genderFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(924, 279, 455, -1));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 679, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel9)
-                .addGap(8, 8, 8)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(updateBtn)
-                .addGap(126, 126, 126)
-                .addComponent(jLabel11))
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 8, Short.MAX_VALUE)
         );
+
+        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 343, -1, -1));
+
+        jLabel9.setFont(new java.awt.Font("Inter", 1, 36)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("User Information");
+        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 20, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -384,8 +360,68 @@ public class UserInfoForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
-        updateUserData();
+        String username = ephillIdFld.getText().trim();
+        String name = nameFld.getText().trim();
+        String email = emailFld.getText().trim();
+        String contactNum = contactNumFld.getText().trim();
+        String address = addressFld.getText().trim();
+        String oldPassword = JOptionPane.showInputDialog(null, "Enter current password:");
+
+        try {
+            Connection conn = DBConnection.getConnection();
+
+            String checkPasswordQuery = "SELECT password FROM users WHERE username=?";
+            PreparedStatement pstCheck = conn.prepareStatement(checkPasswordQuery);
+            pstCheck.setString(1, username);
+            ResultSet rs = pstCheck.executeQuery();
+
+            if (rs.next()) {
+                String storedHashedPassword = rs.getString("password");
+                String enteredHashedPassword = hashPasswordSHA256(oldPassword);
+
+                if (!enteredHashedPassword.equals(storedHashedPassword)) {
+                    JOptionPane.showMessageDialog(null, "Error: Incorrect current password!", "Password Update Error", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit if password is wrong
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Error: User not found!", "Update Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String updateQuery = "UPDATE users SET name=?, email=?, contact_num=?, address=? WHERE username=?";
+            PreparedStatement pstUpdate = conn.prepareStatement(updateQuery);
+            pstUpdate.setString(1, name);
+            pstUpdate.setString(2, email);
+            pstUpdate.setString(3, contactNum);
+            pstUpdate.setString(4, address);
+            pstUpdate.setString(5, username);
+
+            int updated = pstUpdate.executeUpdate();
+            if (updated > 0) {
+                JOptionPane.showMessageDialog(null, "User information updated successfully!", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Update failed. Please try again.", "Update Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Database error! Contact support.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
+        int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            CurrentSession currentSession = CurrentSession.getInstance();
+            currentSession.clearSession();
+            dispose();
+            LoginForm loginForm = new LoginForm();
+            loginForm.setVisible(true);
+        }
+    }//GEN-LAST:event_logoutBtnActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -418,6 +454,12 @@ public class UserInfoForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField addressFld;
+    private javax.swing.JTextField ageFld;
+    private javax.swing.JTextField contactNumFld;
+    private javax.swing.JTextField emailFld;
+    private javax.swing.JTextField ephillIdFld;
+    private javax.swing.JTextField genderFld;
     private javax.swing.JLabel goToAboutUs;
     private javax.swing.JLabel goToActivityLog;
     private javax.swing.JLabel goToDashboard;
@@ -426,15 +468,25 @@ public class UserInfoForm extends javax.swing.JFrame {
     private javax.swing.JLabel goToUserInfo;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel logout;
+    private javax.swing.JButton logoutBtn;
+    private javax.swing.JTextField nameFld;
+    private javax.swing.JTextField passFld;
     private javax.swing.JButton updateBtn;
-    private javax.swing.JTable user_edit_table;
     // End of variables declaration//GEN-END:variables
 }

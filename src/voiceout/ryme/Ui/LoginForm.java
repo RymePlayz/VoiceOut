@@ -6,11 +6,13 @@ import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import voiceout.ryme.Helper.*;
 import voiceout.ryme.Oop.*;
-import javax.swing.KeyStroke;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import static voiceout.ryme.Ui.RegisterForm.hashPasswordSHA256;
 
 public class LoginForm extends javax.swing.JFrame {
 
@@ -40,6 +42,31 @@ public class LoginForm extends javax.swing.JFrame {
                 loginBtnActionPerformed(new ActionEvent(loginBtn, ActionEvent.ACTION_PERFORMED, "Enter Key Pressed"));
             }
         });
+        
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
+
+        usernameFld.addKeyListener(preventLeadingSpaces);
+        passFld.addKeyListener(preventLeadingSpaces);
+        KeyAdapter preventLettersAndLimit2 = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                char c = e.getKeyChar();
+
+                if (!Character.isDigit(c) || field.getText().length() >= 6) {
+                    e.consume();
+                }
+            }
+        };
+        usernameFld.addKeyListener(preventLettersAndLimit2);
 
     }
 
@@ -134,6 +161,7 @@ public class LoginForm extends javax.swing.JFrame {
                 return super.validateFields(fields);
             }
         };
+
         if (username.isEmpty()) {
             validator.addCustomError("• EphillID must not be blank!");
         }
@@ -148,30 +176,40 @@ public class LoginForm extends javax.swing.JFrame {
 
         try {
             Connection conn = DBConnection.getConnection();
-            String query = "SELECT * FROM users WHERE username=? AND password=?";
+
+            // Fetch only the hashed password
+            String query = "SELECT * FROM users WHERE username=?";
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setString(1, username);
-            pst.setString(2, pass);
 
             ResultSet rs = pst.executeQuery();
+
             if (rs.next()) {
-                CurrentSession session = CurrentSession.getInstance();
+                String storedHashedPassword = rs.getString("password");
 
-                session.setUserId(rs.getInt("user_id"));
-                session.setUsername(rs.getString("username"));
-                session.setPassword(rs.getString("password"));
-                session.setContactNumber(rs.getString("contact_num"));
-                session.setGender(rs.getString("gender"));
-                session.setAge(rs.getInt("age"));
-                session.setEmail(rs.getString("email"));
-                session.setAddress(rs.getString("address"));
-                session.setName(rs.getString("name"));
-                session.setCreationDate(rs.getString("creation_date"));
+                String inputHashedPassword = hashPasswordSHA256(pass);
 
-                JOptionPane.showMessageDialog(null, "Login Successful!");
-                Dashboard dashboard = new Dashboard();
-                dashboard.setVisible(true);
-                dispose();
+                // Compare the hashed input password with the stored hashed password
+                if (inputHashedPassword.equals(storedHashedPassword)) {
+                    CurrentSession session = CurrentSession.getInstance();
+
+                    session.setUserId(rs.getInt("user_id"));
+                    session.setUsername(rs.getString("username"));
+                    session.setContactNumber(rs.getString("contact_num"));
+                    session.setGender(rs.getString("gender"));
+                    session.setAge(rs.getInt("age"));
+                    session.setEmail(rs.getString("email"));
+                    session.setAddress(rs.getString("address"));
+                    session.setName(rs.getString("name"));
+                    session.setCreationDate(rs.getString("creation_date"));
+
+                    JOptionPane.showMessageDialog(null, "Login Successful!");
+                    Dashboard dashboard = new Dashboard();
+                    dashboard.setVisible(true);
+                    dispose();
+                } else {
+                    validator.addCustomError("• Invalid Username or Password.");
+                }
             } else {
                 validator.addCustomError("• Invalid Username or Password.");
             }
@@ -182,6 +220,8 @@ public class LoginForm extends javax.swing.JFrame {
         }
 
         validator.displayErrors();
+
+
     }//GEN-LAST:event_loginBtnActionPerformed
 
     public static void main(String args[]) {

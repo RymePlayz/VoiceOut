@@ -1,6 +1,7 @@
 package voiceout.ryme.Ui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import voiceout.ryme.Oop.*;
 import voiceout.ryme.Helper.*;
@@ -10,6 +11,12 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.nio.charset.StandardCharsets;
 
 public class RegisterForm extends javax.swing.JFrame {
 
@@ -33,6 +40,132 @@ public class RegisterForm extends javax.swing.JFrame {
             }
         });
 
+        KeyAdapter preventLetters = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        };
+
+        ageFld.addKeyListener(preventLetters);
+        contactNumFld.addKeyListener(preventLetters);
+        usernameFld.addKeyListener(preventLetters);
+
+        KeyAdapter preventLeadingSpaces = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                if (field.getText().isEmpty() && e.getKeyChar() == ' ') {
+                    e.consume();
+                }
+            }
+        };
+
+        usernameFld.addKeyListener(preventLeadingSpaces);
+        passwordFld.addKeyListener(preventLeadingSpaces);
+        nameFld.addKeyListener(preventLeadingSpaces);
+        ageFld.addKeyListener(preventLeadingSpaces);
+        emailFld.addKeyListener(preventLeadingSpaces);
+        contactNumFld.addKeyListener(preventLeadingSpaces);
+        addressFld.addKeyListener(preventLeadingSpaces);
+
+// Restrict ageFld to 3 digits
+        KeyAdapter preventLettersAndLimit = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                char c = e.getKeyChar();
+
+                if (!Character.isDigit(c) || field.getText().length() >= 3) {
+                    e.consume();
+                }
+            }
+        };
+        ageFld.addKeyListener(preventLettersAndLimit);
+
+// Restrict usernameFld to 6 digits
+        KeyAdapter preventLettersAndLimit2 = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                char c = e.getKeyChar();
+
+                if (!Character.isDigit(c) || field.getText().length() >= 6) {
+                    e.consume();
+                }
+            }
+        };
+        usernameFld.addKeyListener(preventLettersAndLimit2);
+
+// Pre-fill contactNumFld with "09"
+        contactNumFld.setText("09");
+
+        KeyAdapter preventDigitsAndLimitContactNum = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                JTextField field = (JTextField) e.getSource();
+                char c = e.getKeyChar();
+
+                if (field.getCaretPosition() < 2) {
+                    e.consume();
+                    return;
+                }
+
+                if (!Character.isDigit(c) || field.getText().length() >= 11) {
+                    e.consume();
+                }
+            }
+        };
+        contactNumFld.addKeyListener(preventDigitsAndLimitContactNum);
+
+        contactNumFld.getDocument().addDocumentListener(new DocumentListener() {
+            private void checkAndRestore() {
+                SwingUtilities.invokeLater(() -> {
+                    if (contactNumFld.getText().isEmpty() || !contactNumFld.getText().startsWith("09")) {
+                        contactNumFld.setText("09");
+                    }
+                });
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkAndRestore();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkAndRestore();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                checkAndRestore();
+            }
+        });
+
+    }
+
+    public static String hashPasswordSHA256(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedHash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+
+            // Convert bytes to hexadecimal format
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : encodedHash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -190,7 +323,7 @@ public class RegisterForm extends javax.swing.JFrame {
         String age = ageFld.getText().trim();
         String email = emailFld.getText().trim();
         String contactNum = contactNumFld.getText().trim();
-        String address = usernameFld.getText().trim();
+        String address = addressFld.getText().trim(); // Fixed issue
         String gender = genderCBox.getSelectedItem().toString();
 
         ValidationManager validator = new ValidationManager() {
@@ -199,50 +332,13 @@ public class RegisterForm extends javax.swing.JFrame {
                 return super.validateFields(fields);
             }
         };
-        if (username.isEmpty()) {
-            validator.addCustomError("• EphillID must not be blank");
-        } else if (!username.matches("\\d+")) {
-            validator.addCustomError("• EphillID must be valid");
-        } else if (username.length() < 6) {
-            validator.addCustomError("• EphillID must be at least 6 digits long!");
-        }
 
         if (password.isEmpty()) {
             validator.addCustomError("• Password must not be blank");
         } else if (password.length() < 6) {
-            validator.addCustomError("• Password must be 6 Character long");
-        }
-
-        if (name.isEmpty()) {
-            validator.addCustomError("• Name must be 4 Character Long");
-        }
-
-        if (age.isEmpty()) {
-            validator.addCustomError("• Age must not be blank");
-        } else if (!age.matches("\\d+")) {
-            validator.addCustomError("• Age must be numerical");
-        } else {
-            int ageValue = Integer.parseInt(age);
-
-            if (ageValue < 12) {
-                validator.addCustomError("• Age must be a least 13.");
-            }
-        }
-
-        if (email.isEmpty()) {
-            validator.addCustomError("• Email must not be blank");
-        } else if (!email.matches("^[\\w.-]+@(gmail\\.com|outlook\\.com|hotmail\\.com|yahoo\\.com|icloud\\.com|live\\.com)$")) {
-            validator.addCustomError("• Email must be valid");
-        }
-
-        if (contactNum.isEmpty()) {
-            validator.addCustomError("• Contact Number must not be blank.");
-        } else if (contactNum.length() != 11) {
-            validator.addCustomError("• Contact Number must be exactly 11 characters long.");
-        }
-
-        if (address.isEmpty()) {
-            validator.addCustomError("• Address must not be blank");
+            validator.addCustomError("• Password must be at least 6 characters long");
+        } else if (!password.matches(".*[A-Z].*") || !password.matches(".*\\d.*")) {
+            validator.addCustomError("• Password must include at least one uppercase letter and one number");
         }
 
         if (!validator.displayErrors()) {
@@ -250,12 +346,15 @@ public class RegisterForm extends javax.swing.JFrame {
         }
 
         try {
+            // Hash the password before storing it
+            String hashedPassword = hashPasswordSHA256(password);
+
             Connection conn = DBConnection.getConnection();
             String query = "INSERT INTO users (username, password, creation_date, gender, age, contact_num, email, address, name) VALUES (?, ?, CURRENT_TIMESTAMP(6), ?, ?, ?, ?, ?, ?)";
             PreparedStatement pst = conn.prepareStatement(query);
 
             pst.setString(1, username);
-            pst.setString(2, password);
+            pst.setString(2, hashedPassword);  // Store hashed password
             pst.setString(3, gender);
             pst.setInt(4, Integer.parseInt(age));
             pst.setString(5, contactNum);
@@ -280,9 +379,8 @@ public class RegisterForm extends javax.swing.JFrame {
 
             conn.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Account Already Registered", "Account Registration Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }//GEN-LAST:event_registerBtnActionPerformed
 
     public static void main(String args[]) {

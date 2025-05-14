@@ -1,5 +1,11 @@
 package voiceout.ryme.Ui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import voiceout.ryme.Helper.*;
 
@@ -8,6 +14,22 @@ public class AboutUsForm extends javax.swing.JFrame {
     public AboutUsForm() {
         initComponents();
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -92,11 +114,11 @@ public class AboutUsForm extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        feedbackFld = new javax.swing.JTextArea();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        feedbackBtn = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -230,12 +252,12 @@ public class AboutUsForm extends javax.swing.JFrame {
         jLabel15.setText("ROYETTE ANDREI C. TELAR");
         jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(594, 61, 685, 293));
 
-        jTextArea1.setBackground(new java.awt.Color(102, 102, 102));
-        jTextArea1.setColumns(20);
-        jTextArea1.setFont(new java.awt.Font("Inter", 0, 36)); // NOI18N
-        jTextArea1.setForeground(new java.awt.Color(255, 255, 255));
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        feedbackFld.setBackground(new java.awt.Color(102, 102, 102));
+        feedbackFld.setColumns(20);
+        feedbackFld.setFont(new java.awt.Font("Inter", 0, 36)); // NOI18N
+        feedbackFld.setForeground(new java.awt.Color(255, 255, 255));
+        feedbackFld.setRows(5);
+        jScrollPane1.setViewportView(feedbackFld);
 
         jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(328, 458, 1002, 365));
 
@@ -254,15 +276,15 @@ public class AboutUsForm extends javax.swing.JFrame {
 
         jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 70, 960, 280));
 
-        jButton1.setBackground(new java.awt.Color(102, 102, 102));
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Submit");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        feedbackBtn.setBackground(new java.awt.Color(102, 102, 102));
+        feedbackBtn.setForeground(new java.awt.Color(255, 255, 255));
+        feedbackBtn.setText("Submit");
+        feedbackBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                feedbackBtnActionPerformed(evt);
             }
         });
-        jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1180, 840, 150, 50));
+        jPanel2.add(feedbackBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1180, 840, 150, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -283,13 +305,26 @@ public class AboutUsForm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (jTextArea1.getText().isEmpty()) {
-        } else {
-            jTextArea1.setText("");
-            JOptionPane.showMessageDialog(null, "Thank you for your review!", "Confirmation", JOptionPane.INFORMATION_MESSAGE);
+    private void feedbackBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_feedbackBtnActionPerformed
+        String feedback_content = feedbackFld.getText();
+
+        if (!feedback_content.isEmpty()) {
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/voiceout", "root", "")) {
+                String query = "INSERT INTO feedback (feedback_content) VALUES (?)";
+                try (PreparedStatement pst = conn.prepareStatement(query)) {
+                    pst.setString(1, feedback_content); 
+
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Thank you for your review!", "Confirmation", JOptionPane.INFORMATION_MESSAGE);
+                    feedbackFld.setText("");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error! Please check the database connection.", "Database Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+
+    }//GEN-LAST:event_feedbackBtnActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -322,13 +357,14 @@ public class AboutUsForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton feedbackBtn;
+    private javax.swing.JTextArea feedbackFld;
     private javax.swing.JLabel goToAboutUs;
     private javax.swing.JLabel goToActivityLog;
     private javax.swing.JLabel goToDashboard;
     private javax.swing.JLabel goToDonateToUs;
     private javax.swing.JLabel goToSiteTraffic;
     private javax.swing.JLabel goToUserInfo;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -343,7 +379,6 @@ public class AboutUsForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JLabel logout;
     // End of variables declaration//GEN-END:variables
 }

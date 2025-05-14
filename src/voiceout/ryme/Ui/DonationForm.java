@@ -1,5 +1,7 @@
 package voiceout.ryme.Ui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,8 +16,17 @@ public class DonationForm extends javax.swing.JFrame {
 
     public DonationForm() {
         initComponents();
-        updateDonationReceived(donation_recieved, donation); 
-
+        updateDonationReceived(donation_recieved, donation);
+        
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
+        
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -84,8 +95,8 @@ public class DonationForm extends javax.swing.JFrame {
 
             if (rs.next()) {
                 long receivedAmount = rs.getLong("donation_received");
-                donation_recieved.setText("Donated Amount: " + receivedAmount);
-                donationField.setText(String.valueOf(receivedAmount)); 
+                donation_recieved.setText("Donated Amount: $" + receivedAmount + ".00");
+                donationField.setText(String.valueOf(receivedAmount));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,7 +109,7 @@ public class DonationForm extends javax.swing.JFrame {
             PreparedStatement pst = conn.prepareStatement(query);
 
             String donationText = donationField.getText();
-            if (!donationText.matches("\\d+")) { 
+            if (!donationText.matches("\\d+")) {
                 JOptionPane.showMessageDialog(null, "Invalid donation amount.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -140,7 +151,7 @@ public class DonationForm extends javax.swing.JFrame {
         DonationViewer = new javax.swing.JPanel();
         donation_recieved = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -283,8 +294,8 @@ public class DonationForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void doanteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doanteBtnActionPerformed
-        updateDonation(donation); 
-        updateDonationReceived(donation_recieved, donation); 
+        updateDonation(donation);
+        updateDonationReceived(donation_recieved, donation);
         donation.setText("");
     }//GEN-LAST:event_doanteBtnActionPerformed
 

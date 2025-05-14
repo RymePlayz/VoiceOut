@@ -1,5 +1,7 @@
 package voiceout.ryme.Ui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,6 +15,14 @@ public class SiteTrafficForm extends javax.swing.JFrame {
 
     public SiteTrafficForm() {
         initComponents();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
         showUsersData();
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -99,6 +109,7 @@ public class SiteTrafficForm extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -118,7 +129,7 @@ public class SiteTrafficForm extends javax.swing.JFrame {
         users = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -291,7 +302,7 @@ public class SiteTrafficForm extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(SiteTrafficForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-  
+
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

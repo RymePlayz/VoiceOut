@@ -2,6 +2,8 @@ package voiceout.ryme.Ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import voiceout.ryme.Helper.*;
 import javax.swing.JOptionPane;
 import java.sql.Connection;
@@ -20,6 +22,15 @@ public class Comment extends javax.swing.JFrame {
 
     public Comment(int postId) {
         initComponents();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Dashboard dashboard = new Dashboard();
+                dashboard.show();
+                dispose();
+            }
+        });
 
         conn = DBConnection.getConnection();
 
@@ -304,7 +315,7 @@ public class Comment extends javax.swing.JFrame {
         comment = new javax.swing.JTextField();
         commentBtn = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -500,10 +511,12 @@ public class Comment extends javax.swing.JFrame {
 
     private void donateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donateBtnActionPerformed
         handleDonationAction();
+        donation.setText("");
     }//GEN-LAST:event_donateBtnActionPerformed
 
     private void commentBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commentBtnActionPerformed
         submitComment();
+        comment.setText("");
     }//GEN-LAST:event_commentBtnActionPerformed
 
     public static void main(String args[]) {
