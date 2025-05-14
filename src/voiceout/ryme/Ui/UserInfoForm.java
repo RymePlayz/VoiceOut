@@ -1,3 +1,4 @@
+
 package voiceout.ryme.Ui;
 
 import java.awt.event.WindowAdapter;
@@ -10,6 +11,7 @@ import javax.swing.JOptionPane;
 import static voiceout.ryme.Ui.RegisterForm.hashPasswordSHA256;
 import java.sql.ResultSet;
 import javax.swing.ImageIcon;
+
 
 public class UserInfoForm extends javax.swing.JFrame {
 
@@ -442,7 +444,7 @@ lgout.addMouseListener(new java.awt.event.MouseAdapter() {
 
     private void changePassBtnActionPerformedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changePassBtnActionPerformedActionPerformed
         CurrentSession currentSession = CurrentSession.getInstance();
-        int userId = currentSession.getUserId(); // Get the current session user ID
+        int userId = currentSession.getUserId();
 
         if (userId == 0) {
             JOptionPane.showMessageDialog(null, "Error: No active user session found!", "Session Error", JOptionPane.ERROR_MESSAGE);
@@ -452,10 +454,8 @@ lgout.addMouseListener(new java.awt.event.MouseAdapter() {
         String oldPassword;
         boolean isPasswordCorrect = false;
 
-        try {
-            Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection()) {
 
-            // **Step 1: Verify current password (keep prompting until correct)**
             while (!isPasswordCorrect) {
                 oldPassword = JOptionPane.showInputDialog(null, "Enter current password (or cancel to exit):");
 
@@ -464,7 +464,6 @@ lgout.addMouseListener(new java.awt.event.MouseAdapter() {
                     return;
                 }
 
-                // Use user ID instead of username for more accurate verification
                 String checkPasswordQuery = "SELECT password FROM users WHERE user_id=?";
                 PreparedStatement pstCheck = conn.prepareStatement(checkPasswordQuery);
                 pstCheck.setInt(1, userId);
@@ -479,38 +478,51 @@ lgout.addMouseListener(new java.awt.event.MouseAdapter() {
                 String enteredHashedPassword = hashPasswordSHA256(oldPassword);
 
                 if (enteredHashedPassword.equals(storedHashedPassword)) {
-                    isPasswordCorrect = true; // Exit loop when password is correct
+                    isPasswordCorrect = true;
                 } else {
                     JOptionPane.showMessageDialog(null, "Incorrect password! Please try again.", "Password Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
 
-            // **Step 2: Prompt for new password**
-            String newPassword = JOptionPane.showInputDialog(null, "Enter new password:");
+            String newPassword;
+            while (true) {
+                newPassword = JOptionPane.showInputDialog(null, "Enter new password (at least 6 characters):");
 
-            if (newPassword == null || newPassword.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Error: New password cannot be empty!", "Password Change Error", JOptionPane.ERROR_MESSAGE);
+                if (newPassword == null || newPassword.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Error: New password cannot be empty!", "Password Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (newPassword.length() < 6) {
+                    JOptionPane.showMessageDialog(null, "Error: Password must be at least 6 characters long!", "Password Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    break;
+                }
+            }
+
+            String confirmPassword = JOptionPane.showInputDialog(null, "Confirm new password:");
+            if (!newPassword.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(null, "Error: Passwords do not match! Try again.", "Password Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to change passwrod?", "Confirm Change", JOptionPane.YES_NO_OPTION);
+
+            int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to change your password?", "Confirm Change", JOptionPane.YES_NO_OPTION);
 
             if (choice == JOptionPane.YES_OPTION) {
                 String updatePasswordQuery = "UPDATE users SET password=? WHERE user_id=?";
                 PreparedStatement pstUpdate = conn.prepareStatement(updatePasswordQuery);
                 pstUpdate.setString(1, hashPasswordSHA256(newPassword)); // Securely hash new password
                 pstUpdate.setInt(2, userId);
-
                 int updated = pstUpdate.executeUpdate();
+
                 if (updated > 0) {
                     JOptionPane.showMessageDialog(null, "Password updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-
                     currentSession.setPassword(hashPasswordSHA256(newPassword));
                 } else {
                     JOptionPane.showMessageDialog(null, "Password change failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
-                conn.close();
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Database error! Contact support.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -519,34 +531,34 @@ lgout.addMouseListener(new java.awt.event.MouseAdapter() {
     }//GEN-LAST:event_changePassBtnActionPerformedActionPerformed
 
     public static void main(String args[]) {
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserInfoForm().setVisible(true);
-            }
-        });
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(UserInfoForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
+    //</editor-fold>
+
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            new UserInfoForm().setVisible(true);
+        }
+    });
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField addressFld;
