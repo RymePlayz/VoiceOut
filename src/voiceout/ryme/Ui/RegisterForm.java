@@ -17,12 +17,17 @@ import javax.swing.event.DocumentListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
+import javax.swing.ImageIcon;
 
 public class RegisterForm extends javax.swing.JFrame {
 
     public RegisterForm() {
         initComponents();
+        String absolutePath = "/home/ryme/All/Github/VoiceOutSystem/src/images/icon.png";
+        ImageIcon icon = new ImageIcon(absolutePath);
+        setIconImage(icon.getImage());
 
+        
         goToLoginBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -195,6 +200,7 @@ public class RegisterForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Voice Out");
         setResizable(false);
 
         jPanel2.setPreferredSize(new java.awt.Dimension(1000, 650));
@@ -346,7 +352,6 @@ public class RegisterForm extends javax.swing.JFrame {
         }
 
         try {
-            // Hash the password before storing it
             String hashedPassword = hashPasswordSHA256(password);
 
             Connection conn = DBConnection.getConnection();
@@ -354,7 +359,7 @@ public class RegisterForm extends javax.swing.JFrame {
             PreparedStatement pst = conn.prepareStatement(query);
 
             pst.setString(1, username);
-            pst.setString(2, hashedPassword);  // Store hashed password
+            pst.setString(2, hashedPassword);
             pst.setString(3, gender);
             pst.setInt(4, Integer.parseInt(age));
             pst.setString(5, contactNum);
@@ -373,6 +378,9 @@ public class RegisterForm extends javax.swing.JFrame {
                 emailFld.setText("");
                 contactNumFld.setText("");
                 addressFld.setText("");
+                LoginForm loginForm = new LoginForm();
+                loginForm.show();
+                dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Registration failed. Please try again.");
             }

@@ -9,11 +9,13 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import static voiceout.ryme.Ui.RegisterForm.hashPasswordSHA256;
 import java.sql.ResultSet;
+import javax.swing.ImageIcon;
 
 public class UserInfoForm extends javax.swing.JFrame {
 
     public UserInfoForm() {
         initComponents();
+        refreshProfile();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -22,6 +24,9 @@ public class UserInfoForm extends javax.swing.JFrame {
                 dispose();
             }
         });
+        String absolutePath = "/home/ryme/All/Github/VoiceOutSystem/src/images/icon.png";
+        ImageIcon icon = new ImageIcon(absolutePath);
+                setIconImage(icon.getImage());
 
         goToSiteTraffic.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -31,7 +36,20 @@ public class UserInfoForm extends javax.swing.JFrame {
                 dispose();
             }
         });
+lgout.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
 
+                if (choice == JOptionPane.YES_OPTION) {
+                    CurrentSession currentSession = CurrentSession.getInstance();
+                    currentSession.clearSession();
+                    dispose();
+                    LoginForm loginForm = new LoginForm();
+                    loginForm.setVisible(true);
+                }
+            }
+        });
         goToDonateToUs.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -83,10 +101,15 @@ public class UserInfoForm extends javax.swing.JFrame {
     }
 
     public void refreshProfile() {
-        CurrentSession currentSession = new CurrentSession();
-        String name = currentSession.getName();
-        int age = currentSession.getAge();
-        
+        CurrentSession currentSession = CurrentSession.getInstance();
+
+        ephillIdFld.setText(currentSession.getUsername());
+        nameFld.setText(currentSession.getName());
+        ageFld.setText(String.valueOf(currentSession.getAge()));
+        genderFld.setText(currentSession.getGender());
+        emailFld.setText(currentSession.getEmail());
+        contactNumFld.setText(currentSession.getContactNumber());
+        addressFld.setText(currentSession.getAddress());
     }
 
     @SuppressWarnings("unchecked")
@@ -104,8 +127,8 @@ public class UserInfoForm extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         goToAboutUs = new javax.swing.JLabel();
         goToDashboard = new javax.swing.JLabel();
+        lgout = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         updateBtn = new javax.swing.JButton();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
@@ -114,21 +137,21 @@ public class UserInfoForm extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
         ephillIdFld = new javax.swing.JTextField();
         contactNumFld = new javax.swing.JTextField();
         jLabel19 = new javax.swing.JLabel();
         logoutBtn = new javax.swing.JButton();
         emailFld = new javax.swing.JTextField();
         addressFld = new javax.swing.JTextField();
-        passFld = new javax.swing.JTextField();
         nameFld = new javax.swing.JTextField();
         ageFld = new javax.swing.JTextField();
         genderFld = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
+        changePassBtnActionPerformed = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Voice Out");
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -169,6 +192,10 @@ public class UserInfoForm extends javax.swing.JFrame {
 
         goToDashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/home.png"))); // NOI18N
 
+        lgout.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        lgout.setForeground(new java.awt.Color(255, 255, 255));
+        lgout.setText("Logout");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -192,7 +219,8 @@ public class UserInfoForm extends javax.swing.JFrame {
                                 .addComponent(jLabel3)
                                 .addComponent(goToSiteTraffic)
                                 .addComponent(goToDonateToUs)
-                                .addComponent(goToAboutUs)))))
+                                .addComponent(goToAboutUs)
+                                .addComponent(lgout)))))
                 .addContainerGap(29, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -215,7 +243,9 @@ public class UserInfoForm extends javax.swing.JFrame {
                 .addComponent(goToDonateToUs)
                 .addGap(18, 18, 18)
                 .addComponent(goToAboutUs)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 513, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lgout)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 477, Short.MAX_VALUE)
                 .addComponent(jLabel7)
                 .addGap(79, 79, 79))
         );
@@ -227,11 +257,6 @@ public class UserInfoForm extends javax.swing.JFrame {
         jLabel8.setText("Update INFO");
         jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 50, -1, -1));
 
-        jLabel10.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setText("Password:");
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 550, -1, -1));
-
         updateBtn.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         updateBtn.setText("Update");
         updateBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -239,7 +264,7 @@ public class UserInfoForm extends javax.swing.JFrame {
                 updateBtnActionPerformed(evt);
             }
         });
-        jPanel2.add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 600, 192, 35));
+        jPanel2.add(updateBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 560, 192, 35));
 
         jLabel12.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
@@ -276,11 +301,6 @@ public class UserInfoForm extends javax.swing.JFrame {
         jLabel17.setText("Address:");
         jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 500, -1, -1));
 
-        jLabel18.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
-        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel18.setText("Account Creation Date:");
-        jPanel2.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 910, -1, -1));
-
         ephillIdFld.setEditable(false);
         ephillIdFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
         jPanel2.add(ephillIdFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(924, 129, 455, -1));
@@ -299,16 +319,13 @@ public class UserInfoForm extends javax.swing.JFrame {
                 logoutBtnActionPerformed(evt);
             }
         });
-        jPanel2.add(logoutBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1200, 600, 179, 35));
+        jPanel2.add(logoutBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1200, 560, 179, 35));
 
         emailFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
         jPanel2.add(emailFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 390, 455, -1));
 
         addressFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
         jPanel2.add(addressFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 490, 455, -1));
-
-        passFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
-        jPanel2.add(passFld, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 540, 455, -1));
 
         nameFld.setEditable(false);
         nameFld.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
@@ -340,6 +357,15 @@ public class UserInfoForm extends javax.swing.JFrame {
         jLabel9.setText("User Information");
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 20, -1, -1));
 
+        changePassBtnActionPerformed.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
+        changePassBtnActionPerformed.setText("Change Password");
+        changePassBtnActionPerformed.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changePassBtnActionPerformedActionPerformed(evt);
+            }
+        });
+        jPanel2.add(changePassBtnActionPerformed, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 560, 192, 35));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -361,44 +387,35 @@ public class UserInfoForm extends javax.swing.JFrame {
 
     private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
         String username = ephillIdFld.getText().trim();
-        String name = nameFld.getText().trim();
         String email = emailFld.getText().trim();
         String contactNum = contactNumFld.getText().trim();
         String address = addressFld.getText().trim();
-        String oldPassword = JOptionPane.showInputDialog(null, "Enter current password:");
+
+        if (email.isEmpty() || contactNum.isEmpty() || address.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Error: All required fields must be filled!", "Update Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         try {
             Connection conn = DBConnection.getConnection();
 
-            String checkPasswordQuery = "SELECT password FROM users WHERE username=?";
-            PreparedStatement pstCheck = conn.prepareStatement(checkPasswordQuery);
-            pstCheck.setString(1, username);
-            ResultSet rs = pstCheck.executeQuery();
-
-            if (rs.next()) {
-                String storedHashedPassword = rs.getString("password");
-                String enteredHashedPassword = hashPasswordSHA256(oldPassword);
-
-                if (!enteredHashedPassword.equals(storedHashedPassword)) {
-                    JOptionPane.showMessageDialog(null, "Error: Incorrect current password!", "Password Update Error", JOptionPane.ERROR_MESSAGE);
-                    return; // Exit if password is wrong
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Error: User not found!", "Update Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            String updateQuery = "UPDATE users SET name=?, email=?, contact_num=?, address=? WHERE username=?";
+            // **Update user information without changing password**
+            String updateQuery = "UPDATE users SET email=?, contact_num=?, address=? WHERE username=?";
             PreparedStatement pstUpdate = conn.prepareStatement(updateQuery);
-            pstUpdate.setString(1, name);
-            pstUpdate.setString(2, email);
-            pstUpdate.setString(3, contactNum);
-            pstUpdate.setString(4, address);
-            pstUpdate.setString(5, username);
+            pstUpdate.setString(1, email);
+            pstUpdate.setString(2, contactNum);
+            pstUpdate.setString(3, address);
+            pstUpdate.setString(4, username);
 
             int updated = pstUpdate.executeUpdate();
             if (updated > 0) {
                 JOptionPane.showMessageDialog(null, "User information updated successfully!", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+
+                // **Update session data after a successful update**
+                CurrentSession currentSession = CurrentSession.getInstance();
+                currentSession.setEmail(email);
+                currentSession.setContactNumber(contactNum);
+                currentSession.setAddress(address);
             } else {
                 JOptionPane.showMessageDialog(null, "Update failed. Please try again.", "Update Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -422,6 +439,84 @@ public class UserInfoForm extends javax.swing.JFrame {
             loginForm.setVisible(true);
         }
     }//GEN-LAST:event_logoutBtnActionPerformed
+
+    private void changePassBtnActionPerformedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changePassBtnActionPerformedActionPerformed
+        CurrentSession currentSession = CurrentSession.getInstance();
+        int userId = currentSession.getUserId(); // Get the current session user ID
+
+        if (userId == 0) {
+            JOptionPane.showMessageDialog(null, "Error: No active user session found!", "Session Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String oldPassword;
+        boolean isPasswordCorrect = false;
+
+        try {
+            Connection conn = DBConnection.getConnection();
+
+            // **Step 1: Verify current password (keep prompting until correct)**
+            while (!isPasswordCorrect) {
+                oldPassword = JOptionPane.showInputDialog(null, "Enter current password (or cancel to exit):");
+
+                if (oldPassword == null || oldPassword.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Password update cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                // Use user ID instead of username for more accurate verification
+                String checkPasswordQuery = "SELECT password FROM users WHERE user_id=?";
+                PreparedStatement pstCheck = conn.prepareStatement(checkPasswordQuery);
+                pstCheck.setInt(1, userId);
+                ResultSet rs = pstCheck.executeQuery();
+
+                if (!rs.next()) {
+                    JOptionPane.showMessageDialog(null, "Error: User not found!", "Update Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String storedHashedPassword = rs.getString("password");
+                String enteredHashedPassword = hashPasswordSHA256(oldPassword);
+
+                if (enteredHashedPassword.equals(storedHashedPassword)) {
+                    isPasswordCorrect = true; // Exit loop when password is correct
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect password! Please try again.", "Password Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+            // **Step 2: Prompt for new password**
+            String newPassword = JOptionPane.showInputDialog(null, "Enter new password:");
+
+            if (newPassword == null || newPassword.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Error: New password cannot be empty!", "Password Change Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to change passwrod?", "Confirm Change", JOptionPane.YES_NO_OPTION);
+
+            if (choice == JOptionPane.YES_OPTION) {
+                String updatePasswordQuery = "UPDATE users SET password=? WHERE user_id=?";
+                PreparedStatement pstUpdate = conn.prepareStatement(updatePasswordQuery);
+                pstUpdate.setString(1, hashPasswordSHA256(newPassword)); // Securely hash new password
+                pstUpdate.setInt(2, userId);
+
+                int updated = pstUpdate.executeUpdate();
+                if (updated > 0) {
+                    JOptionPane.showMessageDialog(null, "Password updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                    currentSession.setPassword(hashPasswordSHA256(newPassword));
+                } else {
+                    JOptionPane.showMessageDialog(null, "Password change failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                conn.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Database error! Contact support.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }//GEN-LAST:event_changePassBtnActionPerformedActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -456,6 +551,7 @@ public class UserInfoForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField addressFld;
     private javax.swing.JTextField ageFld;
+    private javax.swing.JButton changePassBtnActionPerformed;
     private javax.swing.JTextField contactNumFld;
     private javax.swing.JTextField emailFld;
     private javax.swing.JTextField ephillIdFld;
@@ -466,7 +562,6 @@ public class UserInfoForm extends javax.swing.JFrame {
     private javax.swing.JLabel goToDonateToUs;
     private javax.swing.JLabel goToSiteTraffic;
     private javax.swing.JLabel goToUserInfo;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -474,7 +569,6 @@ public class UserInfoForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel7;
@@ -483,10 +577,10 @@ public class UserInfoForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lgout;
     private javax.swing.JLabel logout;
     private javax.swing.JButton logoutBtn;
     private javax.swing.JTextField nameFld;
-    private javax.swing.JTextField passFld;
     private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }

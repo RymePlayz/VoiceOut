@@ -12,16 +12,33 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 public class Dashboard extends javax.swing.JFrame {
 
     private int postId1, postId2, postId3;
+    private int currentPage = 0;
+    private final int postsPerPage = 3;
+    private boolean showDescending = true;
 
     public Dashboard() {
+        if (next != null) {
+            next.setEnabled(getPostCount() > postsPerPage);
+        } else {
+            System.out.println("Next button is null.");
+        }
 
+        if (previous != null) {
+            previous.setEnabled(false); // Start with Previous disabled since we're on page 0
+        } else {
+            System.out.println("Previous button is null.");
+        }
         initComponents();
+        String absolutePath = "/home/ryme/All/Github/VoiceOutSystem/src/images/icon.png";
+        ImageIcon icon = new ImageIcon(absolutePath);
+        setIconImage(icon.getImage());
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -62,7 +79,20 @@ public class Dashboard extends javax.swing.JFrame {
             }
         };
         donationGoalPost.addKeyListener(preventLettersAndLimit2);
+lgout.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
 
+                if (choice == JOptionPane.YES_OPTION) {
+                    CurrentSession currentSession = CurrentSession.getInstance();
+                    currentSession.clearSession();
+                    dispose();
+                    LoginForm loginForm = new LoginForm();
+                    loginForm.setVisible(true);
+                }
+            }
+        });
         refreshActionPerformed(new java.awt.event.ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Refresh"));
         int userId = (CurrentSession.getInstance() != null) ? CurrentSession.getInstance().getUserId() : -1;
 
@@ -137,6 +167,120 @@ public class Dashboard extends javax.swing.JFrame {
         });
     }
 
+    private void showDescendingPosts(int page) {
+        String sql = "SELECT up.post_id, u.name, up.content, up.donation_goal, up.donation_received, up.likes "
+                + "FROM user_post up "
+                + "JOIN users u ON up.user_id = u.user_id "
+                + "ORDER BY up.created_at DESC LIMIT ? OFFSET ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            int offset = page * postsPerPage;
+            pstmt.setInt(1, postsPerPage);
+            pstmt.setInt(2, offset);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                int index = 1;
+                while (rs.next()) {
+                    int postId = rs.getInt("post_id");
+                    String name = rs.getString("name");
+                    String content = rs.getString("content");
+                    double donationGoal = rs.getDouble("donation_goal");
+                    double donationReceived = rs.getDouble("donation_received");
+                    int likes = rs.getInt("likes");
+
+                    switch (index) {
+                        case 1:
+                            content1.setText(content);
+                            name1.setText(name);
+                            donationGoal1.setText("Goal: $" + donationGoal);
+                            donationRecieved1.setText("Received: $" + donationReceived);
+                            likes1.setText(String.valueOf(likes));
+                            postId1 = postId;
+                            break;
+                        case 2:
+                            content2.setText(content);
+                            name2.setText(name);
+                            donationGoal2.setText("Goal: $" + donationGoal);
+                            donationRecieved2.setText("Received: $" + donationReceived);
+                            likes2.setText(String.valueOf(likes));
+                            postId2 = postId;
+                            break;
+                        case 3:
+                            content3.setText(content);
+                            name3.setText(name);
+                            donationGoal3.setText("Goal: $" + donationGoal);
+                            donationRecieved3.setText("Received: $" + donationReceived);
+                            likes3.setText(String.valueOf(likes));
+                            postId3 = postId;
+                            break;
+                        default:
+                            break;
+                    }
+                    index++;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showAscendingPosts(int page) {
+        String sql = "SELECT up.post_id, u.name, up.content, up.donation_goal, up.donation_received, up.likes "
+                + "FROM user_post up "
+                + "JOIN users u ON up.user_id = u.user_id "
+                + "ORDER BY up.created_at ASC LIMIT ? OFFSET ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            int offset = page * postsPerPage;
+            pstmt.setInt(1, postsPerPage);
+            pstmt.setInt(2, offset);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                int index = 1;
+                while (rs.next()) {
+                    int postId = rs.getInt("post_id");
+                    String name = rs.getString("name");
+                    String content = rs.getString("content");
+                    double donationGoal = rs.getDouble("donation_goal");
+                    double donationReceived = rs.getDouble("donation_received");
+                    int likes = rs.getInt("likes");
+
+                    switch (index) {
+                        case 1:
+                            content1.setText(content);
+                            name1.setText(name);
+                            donationGoal1.setText("Goal: $" + donationGoal);
+                            donationRecieved1.setText("Received: $" + donationReceived);
+                            likes1.setText(String.valueOf(likes));
+                            postId1 = postId;
+                            break;
+                        case 2:
+                            content2.setText(content);
+                            name2.setText(name);
+                            donationGoal2.setText("Goal: $" + donationGoal);
+                            donationRecieved2.setText("Received: $" + donationReceived);
+                            likes2.setText(String.valueOf(likes));
+                            postId2 = postId;
+                            break;
+                        case 3:
+                            content3.setText(content);
+                            name3.setText(name);
+                            donationGoal3.setText("Goal: $" + donationGoal);
+                            donationRecieved3.setText("Received: $" + donationReceived);
+                            likes3.setText(String.valueOf(likes));
+                            postId3 = postId;
+                            break;
+                        default:
+                            break;
+                    }
+                    index++;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getPostCount() {
         try (Connection conn = DBConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement("SELECT COUNT(*) FROM user_post"); ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
@@ -166,7 +310,7 @@ public class Dashboard extends javax.swing.JFrame {
                     double donationReceived = rs.getDouble("donation_received");
                     int likess = rs.getInt("likes");
                     String likes = String.valueOf(likess);
-                    
+
                     switch (index) {
                         case 1:
                             content1.setText(content);
@@ -238,11 +382,13 @@ public class Dashboard extends javax.swing.JFrame {
                     int updatedLikes = rs.getInt("likes");
 
                     if (postId == postId1) {
-                        likes1.setText("Likes: " + updatedLikes);
+                        likes1.setText(String.valueOf(updatedLikes));
                     } else if (postId == postId2) {
-                        likes2.setText("Likes: " + updatedLikes);
+                        likes2.setText(String.valueOf(updatedLikes));
+
                     } else if (postId == postId3) {
-                        likes3.setText("Likes: " + updatedLikes);
+                        likes3.setText(String.valueOf(updatedLikes));
+
                     }
                 }
             }
@@ -458,12 +604,14 @@ public class Dashboard extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         content3 = new javax.swing.JTextArea();
         likes3 = new javax.swing.JLabel();
+        previous = new javax.swing.JButton();
+        next = new javax.swing.JButton();
         name4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         contentPostFld = new javax.swing.JTextArea();
         donationGoalPost = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        postBtn = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         goToActivityLog = new javax.swing.JLabel();
         goToUserInfo = new javax.swing.JLabel();
@@ -474,9 +622,11 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         goToAboutUs = new javax.swing.JLabel();
         goToDashboard = new javax.swing.JLabel();
+        lgout = new javax.swing.JLabel();
         name5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Voice Out");
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -493,12 +643,12 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, -1, -1));
 
         name1.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        name1.setForeground(new java.awt.Color(255, 255, 255));
+        name1.setForeground(new java.awt.Color(0, 0, 0));
         name1.setText("name:");
         jPanel4.add(name1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
 
         username1.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        username1.setForeground(new java.awt.Color(255, 255, 255));
+        username1.setForeground(new java.awt.Color(0, 0, 0));
         username1.setText("name:");
         jPanel4.add(username1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, -1, -1));
         jPanel4.add(donation1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 70, 250, -1));
@@ -528,12 +678,12 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel4.add(like1, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 100, 60, -1));
 
         donationRecieved1.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        donationRecieved1.setForeground(new java.awt.Color(255, 255, 255));
+        donationRecieved1.setForeground(new java.awt.Color(0, 0, 0));
         donationRecieved1.setText("donation");
         jPanel4.add(donationRecieved1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 40, 250, -1));
 
         donationGoal1.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        donationGoal1.setForeground(new java.awt.Color(255, 255, 255));
+        donationGoal1.setForeground(new java.awt.Color(0, 0, 0));
         donationGoal1.setText("goal");
         jPanel4.add(donationGoal1, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 20, 250, -1));
 
@@ -549,13 +699,13 @@ public class Dashboard extends javax.swing.JFrame {
 
         post_area.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 500, 900, 190));
 
-        refresh.setText("Refresh");
+        refresh.setText("↻");
         refresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 refreshActionPerformed(evt);
             }
         });
-        post_area.add(refresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 10, -1, -1));
+        post_area.add(refresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 10, 40, 40));
 
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -563,7 +713,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel7.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, -1, -1));
 
         username2.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        username2.setForeground(new java.awt.Color(255, 255, 255));
+        username2.setForeground(new java.awt.Color(0, 0, 0));
         username2.setText("name:");
         jPanel7.add(username2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, -1, -1));
         jPanel7.add(donation2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 70, 250, -1));
@@ -593,17 +743,17 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel7.add(like2, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 100, 60, -1));
 
         name2.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        name2.setForeground(new java.awt.Color(255, 255, 255));
+        name2.setForeground(new java.awt.Color(0, 0, 0));
         name2.setText("name:");
         jPanel7.add(name2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
 
         donationRecieved2.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        donationRecieved2.setForeground(new java.awt.Color(255, 255, 255));
+        donationRecieved2.setForeground(new java.awt.Color(0, 0, 0));
         donationRecieved2.setText("donation");
         jPanel7.add(donationRecieved2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 40, 250, -1));
 
         donationGoal2.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        donationGoal2.setForeground(new java.awt.Color(255, 255, 255));
+        donationGoal2.setForeground(new java.awt.Color(0, 0, 0));
         donationGoal2.setText("goal");
         jPanel7.add(donationGoal2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 20, 250, -1));
 
@@ -615,8 +765,7 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel7.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 80, 500, -1));
 
         likes2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/likeIcon.png"))); // NOI18N
-        likes2.setText("like");
-        jPanel7.add(likes2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 140, 50, -1));
+        jPanel7.add(likes2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 130, -1, -1));
 
         post_area.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 280, 900, 190));
 
@@ -626,12 +775,12 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel8.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 0, -1, -1));
 
         name3.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        name3.setForeground(new java.awt.Color(255, 255, 255));
+        name3.setForeground(new java.awt.Color(0, 0, 0));
         name3.setText("name:");
         jPanel8.add(name3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 20, -1, -1));
 
         username3.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        username3.setForeground(new java.awt.Color(255, 255, 255));
+        username3.setForeground(new java.awt.Color(0, 0, 0));
         username3.setText("name:");
         jPanel8.add(username3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 40, -1, -1));
         jPanel8.add(donation3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 70, 250, -1));
@@ -661,12 +810,12 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel8.add(like3, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 100, 60, -1));
 
         donationRecieved3.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        donationRecieved3.setForeground(new java.awt.Color(255, 255, 255));
+        donationRecieved3.setForeground(new java.awt.Color(0, 0, 0));
         donationRecieved3.setText("donation");
         jPanel8.add(donationRecieved3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 40, 250, -1));
 
         donationGoal3.setFont(new java.awt.Font("Inter", 1, 14)); // NOI18N
-        donationGoal3.setForeground(new java.awt.Color(255, 255, 255));
+        donationGoal3.setForeground(new java.awt.Color(0, 0, 0));
         donationGoal3.setText("goal");
         jPanel8.add(donationGoal3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 20, 250, -1));
 
@@ -678,10 +827,25 @@ public class Dashboard extends javax.swing.JFrame {
         jPanel8.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 500, -1));
 
         likes3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/likeIcon.png"))); // NOI18N
-        likes3.setText("like");
-        jPanel8.add(likes3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 130, 50, -1));
+        jPanel8.add(likes3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 130, -1, -1));
 
         post_area.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 50, 900, 190));
+
+        previous.setText("Previous");
+        previous.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                previousActionPerformed(evt);
+            }
+        });
+        post_area.add(previous, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 10, -1, 30));
+
+        next.setText("Next");
+        next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextActionPerformed(evt);
+            }
+        });
+        post_area.add(next, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 10, 80, 30));
 
         jPanel2.add(post_area, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 230, 990, 710));
 
@@ -701,12 +865,12 @@ public class Dashboard extends javax.swing.JFrame {
         donationGoalPost.setBackground(new java.awt.Color(102, 102, 102));
         donationGoalPost.setForeground(new java.awt.Color(255, 255, 255));
 
-        jButton1.setBackground(new java.awt.Color(102, 102, 102));
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Post");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        postBtn.setBackground(new java.awt.Color(102, 102, 102));
+        postBtn.setForeground(new java.awt.Color(255, 255, 255));
+        postBtn.setText("Post");
+        postBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                postBtnActionPerformed(evt);
             }
         });
 
@@ -720,7 +884,7 @@ public class Dashboard extends javax.swing.JFrame {
                 .addGap(33, 33, 33)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(donationGoalPost, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(postBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(73, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -731,7 +895,7 @@ public class Dashboard extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(donationGoalPost, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(postBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
@@ -772,6 +936,10 @@ public class Dashboard extends javax.swing.JFrame {
 
         goToDashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/home.png"))); // NOI18N
 
+        lgout.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        lgout.setForeground(new java.awt.Color(255, 255, 255));
+        lgout.setText("Logout");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -792,7 +960,8 @@ public class Dashboard extends javax.swing.JFrame {
                             .addComponent(jLabel3)
                             .addComponent(goToSiteTraffic)
                             .addComponent(goToDonateToUs)
-                            .addComponent(goToAboutUs))))
+                            .addComponent(goToAboutUs)
+                            .addComponent(lgout))))
                 .addContainerGap(29, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -815,7 +984,9 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(goToDonateToUs)
                 .addGap(18, 18, 18)
                 .addComponent(goToAboutUs)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 513, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(lgout)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 465, Short.MAX_VALUE)
                 .addComponent(jLabel7)
                 .addGap(79, 79, 79))
         );
@@ -846,7 +1017,7 @@ public class Dashboard extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void postBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_postBtnActionPerformed
         CurrentSession session = CurrentSession.getInstance();
         int userId = session.getUserId();
         String name = session.getName();
@@ -888,7 +1059,7 @@ public class Dashboard extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error adding post! Please check the database connection.", "Database Error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_postBtnActionPerformed
 
     private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
         int userId = (CurrentSession.getInstance() != null) ? CurrentSession.getInstance().getUserId() : -1;
@@ -990,6 +1161,42 @@ public class Dashboard extends javax.swing.JFrame {
         setSelectedPostIndex(1);
     }//GEN-LAST:event_commentSec1ActionPerformed
 
+    private void previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousActionPerformed
+        if (currentPage > 0) {
+            currentPage--;
+            if (showDescending) {
+                showDescendingPosts(currentPage);
+            } else {
+                showAscendingPosts(currentPage);
+            }
+        }
+
+        // Disable Previous button if we're at the first page
+        previous.setEnabled(currentPage > 0);
+
+        // Enable Next button if there's still room to go forward
+        next.setEnabled((currentPage + 1) * postsPerPage < getPostCount());
+    }//GEN-LAST:event_previousActionPerformed
+
+    private void nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextActionPerformed
+        int totalPosts = getPostCount(); // Get total number of posts
+
+        if ((currentPage + 1) * postsPerPage < totalPosts) {
+            currentPage++;
+            if (showDescending) {
+                showDescendingPosts(currentPage);
+            } else {
+                showAscendingPosts(currentPage);
+            }
+        }
+
+        // Disable Next button if we've reached the last page
+        next.setEnabled((currentPage + 1) * postsPerPage < totalPosts);
+
+        // Enable Previous button since we're no longer on the first page
+        previous.setEnabled(currentPage > 0);
+    }//GEN-LAST:event_nextActionPerformed
+
     public static void main(String args[]) {
 
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -1048,7 +1255,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel goToDonateToUs;
     private javax.swing.JLabel goToSiteTraffic;
     private javax.swing.JLabel goToUserInfo;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
@@ -1064,6 +1270,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JLabel lgout;
     private static javax.swing.JButton like1;
     private static javax.swing.JButton like2;
     private static javax.swing.JButton like3;
@@ -1076,7 +1283,10 @@ public class Dashboard extends javax.swing.JFrame {
     private static javax.swing.JLabel name3;
     private static javax.swing.JLabel name4;
     private static javax.swing.JLabel name5;
+    public static javax.swing.JButton next;
+    private javax.swing.JButton postBtn;
     private static javax.swing.JPanel post_area;
+    public static javax.swing.JButton previous;
     private javax.swing.JButton refresh;
     private static javax.swing.JLabel username1;
     private static javax.swing.JLabel username2;

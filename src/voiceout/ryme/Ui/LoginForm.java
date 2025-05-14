@@ -10,6 +10,7 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import static voiceout.ryme.Ui.RegisterForm.hashPasswordSHA256;
@@ -18,6 +19,9 @@ public class LoginForm extends javax.swing.JFrame {
 
     public LoginForm() {
         initComponents();
+String absolutePath = "/home/ryme/All/Github/VoiceOutSystem/src/images/icon.png";
+        ImageIcon icon = new ImageIcon(absolutePath);
+                setIconImage(icon.getImage());
 
         goToRegister.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -85,6 +89,7 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Voice Out");
         setResizable(false);
 
         jPanel2.setPreferredSize(new java.awt.Dimension(1000, 650));

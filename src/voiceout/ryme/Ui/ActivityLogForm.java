@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.sql.Timestamp;
+import javax.swing.ImageIcon;
 
 public class ActivityLogForm extends javax.swing.JFrame {
 
@@ -31,6 +32,9 @@ addWindowListener(new WindowAdapter() {
         initComponents();
         refreshActivityLog();
         loadUserPosts();
+String absolutePath = "/home/ryme/All/Github/VoiceOutSystem/src/images/icon.png";
+        ImageIcon icon = new ImageIcon(absolutePath);
+                setIconImage(icon.getImage());
 
         goToDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -40,7 +44,20 @@ addWindowListener(new WindowAdapter() {
                 dispose();
             }
         });
+lgout.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to log out?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
 
+                if (choice == JOptionPane.YES_OPTION) {
+                    CurrentSession currentSession = CurrentSession.getInstance();
+                    currentSession.clearSession();
+                    dispose();
+                    LoginForm loginForm = new LoginForm();
+                    loginForm.setVisible(true);
+                }
+            }
+        });
         goToUserInfo.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -296,6 +313,7 @@ addWindowListener(new WindowAdapter() {
         jLabel7 = new javax.swing.JLabel();
         goToAboutUs = new javax.swing.JLabel();
         goToDashboard = new javax.swing.JLabel();
+        lgout = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         like1 = new javax.swing.JPanel();
         createdAt1 = new javax.swing.JLabel();
@@ -337,6 +355,7 @@ addWindowListener(new WindowAdapter() {
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setTitle("Voice Out");
         setResizable(false);
 
         jPanel2.setBackground(new java.awt.Color(11, 11, 69));
@@ -377,6 +396,10 @@ addWindowListener(new WindowAdapter() {
 
         goToDashboard.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/home.png"))); // NOI18N
 
+        lgout.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
+        lgout.setForeground(new java.awt.Color(255, 255, 255));
+        lgout.setText("Logout");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -400,8 +423,9 @@ addWindowListener(new WindowAdapter() {
                                 .addComponent(jLabel3)
                                 .addComponent(goToSiteTraffic)
                                 .addComponent(goToDonateToUs)
-                                .addComponent(goToAboutUs)))))
-                .addContainerGap(29, Short.MAX_VALUE))
+                                .addComponent(goToAboutUs)
+                                .addComponent(lgout)))))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -423,7 +447,9 @@ addWindowListener(new WindowAdapter() {
                 .addComponent(goToDonateToUs)
                 .addGap(18, 18, 18)
                 .addComponent(goToAboutUs)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 507, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(lgout)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 459, Short.MAX_VALUE)
                 .addComponent(jLabel7)
                 .addGap(79, 79, 79))
         );
@@ -791,6 +817,7 @@ addWindowListener(new WindowAdapter() {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JLabel lgout;
     private javax.swing.JPanel like1;
     private javax.swing.JLabel likes1;
     private javax.swing.JLabel likes2;
